@@ -1,6 +1,4 @@
-# Recreate the complete, clean, self-contained index.html file with working modals and clean vanilla JS + Firebase/Razorpay integration
-
-html_code = """<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
@@ -1959,7 +1957,7 @@ html_code = """<!DOCTYPE html>
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     // Firebase configuration 
     const firebaseConfig = {
@@ -1972,6 +1970,76 @@ html_code = """<!DOCTYPE html>
     };
 
     let auth, db, provider;
+
+    // Device Fingerprint generator: Locks student account to a single device
+    function getDeviceIdentifier() {
+      let storedId = localStorage.getItem('a4_device_id');
+      if (!storedId) {
+        const rawString = navigator.userAgent + screen.width + "x" + screen.height + screen.colorDepth + Math.random().toString(36).substring(2);
+        let hash = 0;
+        for (let i = 0; i < rawString.length; i++) {
+          hash = ((hash << 5) - hash) + rawString.charCodeAt(i);
+          hash |= 0;
+        }
+        storedId = 'DEV_' + Math.abs(hash) + '_' + Date.now();
+        localStorage.setItem('a4_device_id', storedId);
+      }
+      return storedId;
+    }
+
+    // Handles user authentication and single-device lock verification
+    async function handleUserLoginSession(user) {
+      if (!user || !db) return true;
+      const thisDeviceId = getDeviceIdentifier();
+      const userRef = doc(db, "users", user.uid);
+      const userSnap = await getDoc(userRef);
+
+      if (userSnap.exists()) {
+        const userData = userSnap.data();
+
+        // Check if account is bound to another device
+        if (userData.registeredDeviceId && userData.registeredDeviceId !== thisDeviceId) {
+          alert("❌ Login Asafal!
+
+Ye account pehle se kisi dusre phone/device par bind hai.
+Ek account sirf ek hi phone me chala sakte hain.
+
+Agar aapne naya phone liya hai toh A4 Agriculture helpline (+91 8764560007) se device reset karwayein.");
+          await signOut(auth);
+          window.currentFirebaseUser = null;
+          window.userPurchasedCourses = [];
+          localStorage.removeItem('a4_unlocked_courses');
+          location.reload();
+          return false;
+        }
+
+        // First-time device binding for existing account
+        if (!userData.registeredDeviceId) {
+          await updateDoc(userRef, {
+            registeredDeviceId: thisDeviceId,
+            deviceBindDate: new Date().toISOString()
+          });
+        }
+
+        // Restore purchased courses
+        if (userData.courses && Array.isArray(userData.courses)) {
+          window.userPurchasedCourses = userData.courses;
+          localStorage.setItem('a4_unlocked_courses', JSON.stringify(window.userPurchasedCourses));
+        }
+      } else {
+        // Completely new student registration: lock to this device
+        await setDoc(userRef, {
+          uid: user.uid,
+          email: user.email,
+          displayName: user.displayName || "Student",
+          registeredDeviceId: thisDeviceId,
+          deviceBindDate: new Date().toISOString(),
+          courses: []
+        });
+      }
+      return true;
+    }
+
     try {
       const app = initializeApp(firebaseConfig);
       auth = getAuth(app);
@@ -1981,31 +2049,25 @@ html_code = """<!DOCTYPE html>
       onAuthStateChanged(auth, async (user) => {
         if (user) {
           window.currentFirebaseUser = user;
+          const isAllowed = await handleUserLoginSession(user);
+          if (!isAllowed) return;
+
           const firstName = user.displayName ? user.displayName.split(' ')[0] : "Student";
           document.getElementById("navLoginBtn").innerText = `✓ ${firstName}`;
-          
-          try {
-            const userRef = doc(db, "users", user.uid);
-            const userDoc = await getDoc(userRef);
-            if (userDoc.exists() && userDoc.data().courses) {
-              window.userPurchasedCourses = userDoc.data().courses;
-              localStorage.setItem('a4_unlocked_courses', JSON.stringify(window.userPurchasedCourses));
-            }
-          } catch (e) {
-            console.log("Database sync offline/test mode");
-          }
         } else {
           window.currentFirebaseUser = null;
           document.getElementById("navLoginBtn").innerText = "👤 Student Login";
         }
+
         if (window.currentActiveCourseId) {
           window.openCoursePortal(window.currentActiveCourseId);
         }
       });
     } catch(err) {
-      console.log("Firebase initialized in local fallback mode");
+      console.log("Firebase initialized in local fallback mode", err);
     }
 
+    // Top Student Login button click
     window.handleAuthClick = async function() {
       if (window.currentFirebaseUser && auth) {
         if (confirm(`Aap ${window.currentFirebaseUser.email} se login hain. Logout karna chahte hain?`)) {
@@ -2016,20 +2078,41 @@ html_code = """<!DOCTYPE html>
         }
       } else if (auth && provider) {
         try {
-          await signInWithPopup(auth, provider);
+          const result = await signInWithPopup(auth, provider);
+          await handleUserLoginSession(result.user);
         } catch (err) {
-          alert("Login window closed ya configuration check karein: " + err.message);
+          console.error("Login Error:", err);
+          alert("Login window band hui ya cancel ho gayi: " + err.message);
         }
       } else {
-        alert("Firebase keys add hone ke baad Google login active hoga. Demo mode me payment testing direct chal sakti hai.");
+        alert("Firebase system load ho raha hai, kripya 2 second baad prayas karein.");
       }
     };
 
+    // Pay & Unlock button click: login compulsory first, then direct Live Razorpay
     window.initiatePayment = async function() {
       const courseId = window.currentActiveCourseId;
       const course = window.A4_COURSES[courseId];
       if (!course) return;
 
+      // 1. Agar bacha logged in nahi hai, toh pehle Google Sign-in khulega
+      if (!window.currentFirebaseUser) {
+        try {
+          if (!auth || !provider) {
+            alert("Authentication system abhi initialize ho raha hai. Page refresh karein.");
+            return;
+          }
+          const result = await signInWithPopup(auth, provider);
+          const isAllowed = await handleUserLoginSession(result.user);
+          if (!isAllowed) return;
+        } catch (error) {
+          console.error("Payment Login Error:", error);
+          alert("Course unlock karne ke liye pehle Google Login zaroori hai.");
+          return;
+        }
+      }
+
+      // 2. Verified Live Razorpay Key
       const razorpayKey = "rzp_live_TxmWAx0ocMWHzb";
 
       const options = {
@@ -2038,43 +2121,46 @@ html_code = """<!DOCTYPE html>
         "currency": "INR",
         "name": "A4 AGRICULTURE",
         "description": course.title,
+        "prefill": {
+          "name": window.currentFirebaseUser ? window.currentFirebaseUser.displayName : "Student",
+          "email": window.currentFirebaseUser ? window.currentFirebaseUser.email : "student@example.com"
+        },
         "handler": async function (response) {
+          // Local storage unlock
+          if (!window.userPurchasedCourses) window.userPurchasedCourses = [];
           if (window.userPurchasedCourses.indexOf(courseId) === -1) {
             window.userPurchasedCourses.push(courseId);
             localStorage.setItem('a4_unlocked_courses', JSON.stringify(window.userPurchasedCourses));
           }
 
+          // Firestore permanent sync
           if (window.currentFirebaseUser && db) {
             try {
               await setDoc(doc(db, "users", window.currentFirebaseUser.uid), {
                 email: window.currentFirebaseUser.email,
                 displayName: window.currentFirebaseUser.displayName,
                 courses: window.userPurchasedCourses,
-                lastPaymentId: response.razorpay_payment_id
+                lastPaymentId: response.razorpay_payment_id,
+                purchasedAt: new Date().toISOString()
               }, { merge: true });
-            } catch(e) {}
+            } catch(e) {
+              console.error("Firestore sync error:", e);
+            }
           }
 
           alert("🎉 Payment safal rahi! Course unlock ho gaya.");
           window.openCoursePortal(courseId);
         },
-        "prefill": {
-          "name": window.currentFirebaseUser ? window.currentFirebaseUser.displayName : "Student",
-          "email": window.currentFirebaseUser ? window.currentFirebaseUser.email : "student@example.com"
-        },
         "theme": { "color": "#123d1d" }
       };
 
       const rzp = new Razorpay(options);
+      rzp.on('payment.failed', function (resp) {
+        alert("Payment fail ho gayi: " + (resp.error.description || "Dobara prayas karein"));
+      });
       rzp.open();
     };
   </script>
 
 </body>
 </html>
-"""
-
-with open("index-v3.html", "w", encoding="utf-8") as f:
-    f.write(html_code)
-
-print("Fresh file created: index-v3.html")
