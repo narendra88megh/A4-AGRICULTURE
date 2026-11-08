@@ -1999,7 +1999,7 @@
 
         // Check if account is bound to another device
         if (userData.registeredDeviceId && userData.registeredDeviceId !== thisDeviceId) {
-          alert("❌ Login Asafal!\n\nYe account pehle se kisi dusre phone/device par bind hai.\nEk account sirf ek hi phone me chala sakte hain.\n\nAgar aapne naya phone liya hai toh A4 Agriculture helpline (+91 8764560007) se device reset karwayein.");
+          alert("❌ Login Asafal!\\n\\nYe account pehle se kisi dusre phone/device par bind hai.\\nEk account sirf ek hi phone me chala sakte hain.\\n\\nAgar aapne naya phone liya hai toh A4 Agriculture helpline se device reset karwayein.");
           await signOut(auth);
           window.currentFirebaseUser = null;
           window.userPurchasedCourses = [];
