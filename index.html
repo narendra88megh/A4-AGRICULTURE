@@ -1,4 +1,6 @@
-<!DOCTYPE html>
+# Recreate the complete, clean, self-contained index.html file with working modals and clean vanilla JS + Firebase/Razorpay integration
+
+html_code = """<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
@@ -13,17 +15,20 @@
 
   <style>
     :root {
+      /* Agriculture Green Palette */
       --green-dark: #123d1d;
       --green-mid: #256b34;
       --green-leaf: #348847;
       --green-soft: #e8f5e9;
       --green-tint: #f3f8f4;
       
+      /* Biology Sky / Light Blue Palette */
       --bio-deep: #014373;
       --bio-mid: #0288d1;
       --bio-light: #29b6f6;
       --bio-soft: #e1f5fe;
       
+      /* Gold & Accent */
       --gold: #fbc02d;
       --gold-dark: #f57f17;
       --charcoal: #122116;
@@ -97,7 +102,6 @@
       font-size: 1.28rem;
       letter-spacing: -0.02em;
       color: var(--green-dark);
-      cursor: pointer;
     }
 
     .brand-logo-svg {
@@ -115,7 +119,7 @@
     nav ul {
       display: flex;
       list-style: none;
-      gap: 18px;
+      gap: 22px;
       align-items: center;
       font-weight: 700;
       font-size: 0.92rem;
@@ -128,7 +132,7 @@
     .nav-pill-btn {
       background: var(--green-mid);
       color: #fff !important;
-      padding: 8px 16px;
+      padding: 8px 18px;
       border-radius: 999px;
       display: inline-flex;
       align-items: center;
@@ -138,46 +142,6 @@
 
     .nav-pill-btn:hover {
       background: var(--green-dark);
-    }
-
-    .nav-login-btn {
-      background: #0d2614;
-      border: 1.5px solid var(--gold);
-      color: var(--gold) !important;
-      padding: 7px 16px;
-      border-radius: 999px;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      cursor: pointer;
-      font-weight: 800;
-    }
-
-    .nav-login-btn:hover {
-      background: var(--gold);
-      color: #0c2612 !important;
-    }
-
-    .user-pill {
-      background: var(--green-soft);
-      border: 1px solid var(--green-mid);
-      color: var(--green-dark);
-      padding: 6px 14px;
-      border-radius: 999px;
-      font-size: 0.82rem;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .logout-btn {
-      background: none;
-      border: none;
-      color: #d32f2f;
-      font-weight: 800;
-      cursor: pointer;
-      font-size: 0.82rem;
-      text-decoration: underline;
     }
 
     .menu-toggle {
@@ -296,6 +260,7 @@
       box-shadow: 0 4px 16px rgba(251, 192, 45, 0.35);
       transition: transform 0.15s ease, background 0.15s ease;
       cursor: pointer;
+      border: none;
     }
 
     .btn-gold:hover {
@@ -318,6 +283,7 @@
       background: rgba(255, 255, 255, 0.2);
     }
 
+    /* Narendra Sir HD Photo Frame in Hero */
     .hero-portrait-card {
       position: relative;
       max-width: 400px;
@@ -343,6 +309,8 @@
       object-fit: cover;
       object-position: center top;
       display: block;
+      image-rendering: -webkit-optimize-contrast;
+      image-rendering: crisp-edges;
     }
 
     .portrait-badge {
@@ -360,10 +328,21 @@
       align-items: center;
     }
 
-    .portrait-badge b { color: #ffffff; font-size: 1.05rem; display: block; }
-    .portrait-badge span { color: var(--gold); font-size: 0.8rem; font-weight: 800; text-transform: uppercase; }
+    .portrait-badge b {
+      color: #ffffff;
+      font-size: 1.05rem;
+      display: block;
+    }
 
-    /* Courses Wrapper */
+    .portrait-badge span {
+      color: var(--gold);
+      font-size: 0.8rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Courses Blocks & Sections */
     .courses-wrapper {
       padding: 60px 0 80px;
     }
@@ -412,7 +391,7 @@
       gap: 24px;
     }
 
-    /* Course Card Interactive */
+    /* Card styling */
     .course-card {
       background: var(--card-white);
       border-radius: var(--radius-md);
@@ -422,29 +401,14 @@
       display: flex;
       flex-direction: column;
       transition: transform 0.2s ease, box-shadow 0.2s ease;
-      cursor: pointer;
-      position: relative;
     }
 
     .course-card:hover {
-      transform: translateY(-5px);
+      transform: translateY(-4px);
       box-shadow: var(--shadow-hover);
     }
 
-    .course-card .card-click-hint {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background: rgba(0,0,0,0.65);
-      color: #fff;
-      font-size: 0.72rem;
-      font-weight: 700;
-      padding: 3px 8px;
-      border-radius: 4px;
-      pointer-events: none;
-      backdrop-filter: blur(4px);
-    }
-
+    /* Subject Banners */
     .course-banner {
       height: 140px;
       padding: 16px;
@@ -455,17 +419,38 @@
       position: relative;
     }
 
-    .course-card.theme-agri { border-top: 4px solid var(--green-mid); }
-    .course-card.theme-agri .course-banner { background: linear-gradient(135deg, #0e3518 0%, #1d5f2c 60%, #2e7d32 100%); }
+    /* Agriculture Card Theme */
+    .course-card.theme-agri {
+      border-top: 4px solid var(--green-mid);
+    }
+    .course-card.theme-agri .course-banner {
+      background: linear-gradient(135deg, #0e3518 0%, #1d5f2c 60%, #2e7d32 100%);
+    }
 
-    .course-card.theme-bio { border-top: 4px solid var(--bio-mid); }
-    .course-card.theme-bio .course-banner { background: linear-gradient(135deg, #013763 0%, #0277bd 60%, #03a9f4 100%); }
+    /* Biology Card Theme */
+    .course-card.theme-bio {
+      border-top: 4px solid var(--bio-mid);
+    }
+    .course-card.theme-bio .course-banner {
+      background: linear-gradient(135deg, #013763 0%, #0277bd 60%, #03a9f4 100%);
+    }
 
-    .course-card.theme-combo { border-top: 4px solid var(--gold-dark); border: 2px solid var(--gold); }
-    .course-card.theme-combo .course-banner { background: linear-gradient(135deg, #0f3d1b 0%, #0288d1 60%, #f57f17 100%); }
+    /* Combo Card Theme */
+    .course-card.theme-combo {
+      border-top: 4px solid var(--gold-dark);
+      border: 2px solid var(--gold);
+    }
+    .course-card.theme-combo .course-banner {
+      background: linear-gradient(135deg, #0f3d1b 0%, #0288d1 60%, #f57f17 100%);
+    }
 
-    .course-card.theme-officer { border-top: 4px solid #1a237e; }
-    .course-card.theme-officer .course-banner { background: linear-gradient(135deg, #0d2137 0%, #153e2a 100%); }
+    /* Officer Exam Theme */
+    .course-card.theme-officer {
+      border-top: 4px solid #1a237e;
+    }
+    .course-card.theme-officer .course-banner {
+      background: linear-gradient(135deg, #0d2137 0%, #153e2a 100%);
+    }
 
     .banner-top-tags {
       display: flex;
@@ -482,9 +467,21 @@
       backdrop-filter: blur(4px);
     }
 
-    .banner-mentor-pill { color: var(--gold); }
-    .banner-title { font-size: 1.4rem; font-weight: 900; line-height: 1.2; }
-    .banner-sub { font-size: 0.8rem; opacity: 0.9; }
+    .banner-mentor-pill {
+      color: var(--gold);
+    }
+
+    .banner-title {
+      font-size: 1.5rem;
+      font-weight: 900;
+      letter-spacing: -0.01em;
+      line-height: 1.15;
+    }
+
+    .banner-sub {
+      font-size: 0.8rem;
+      opacity: 0.9;
+    }
 
     .course-info {
       padding: 20px;
@@ -510,9 +507,21 @@
       color: #233e29;
     }
 
-    .features-list li { display: flex; align-items: center; gap: 6px; }
-    .features-list li::before { content: '✔'; color: var(--green-mid); font-weight: 900; }
-    .theme-bio .features-list li::before { color: var(--bio-mid); }
+    .features-list li {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .features-list li::before {
+      content: '✔';
+      color: var(--green-mid);
+      font-weight: 900;
+    }
+
+    .theme-bio .features-list li::before {
+      color: var(--bio-mid);
+    }
 
     .price-row {
       border-top: 1px dashed var(--line);
@@ -532,13 +541,18 @@
     }
 
     .price-final {
-      font-size: 1.7rem;
+      font-size: 1.8rem;
       font-weight: 900;
       color: var(--green-dark);
     }
 
-    .theme-bio .price-final { color: var(--bio-deep); }
-    .theme-combo .price-final { color: var(--gold-dark); }
+    .theme-bio .price-final {
+      color: var(--bio-deep);
+    }
+
+    .theme-combo .price-final {
+      color: var(--gold-dark);
+    }
 
     .discount-pill {
       background: var(--green-soft);
@@ -549,340 +563,33 @@
       border-radius: 4px;
     }
 
-    .theme-bio .discount-pill { background: var(--bio-soft); color: var(--bio-mid); }
-
-    .card-actions {
-      display: flex;
-      gap: 8px;
+    .theme-bio .discount-pill {
+      background: var(--bio-soft);
+      color: var(--bio-mid);
     }
 
-    .view-btn {
-      flex: 1;
-      background: var(--green-dark);
-      color: #ffffff;
-      font-weight: 700;
-      font-size: 0.9rem;
-      padding: 10px;
-      border-radius: 8px;
-      text-align: center;
-      transition: background 0.15s;
-    }
-
-    .view-btn:hover { background: var(--green-mid); }
-
-    .enroll-btn {
-      background: #25d366;
-      color: #ffffff;
-      font-weight: 700;
-      font-size: 0.9rem;
-      padding: 10px 14px;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      transition: background 0.15s;
-    }
-
-    .enroll-btn:hover { background: #1eb857; }
-
-    /* =========================================================
-       PAGE 2: DEDICATED COURSE DETAILS VIEW (SAME THEME & CONSISTENCY)
-       ========================================================= */
-    #courseDetailsView {
-      display: none;
-      padding: 40px 0 80px;
-      min-height: 80vh;
-    }
-
-    .back-btn-strip {
-      margin-bottom: 24px;
-    }
-
-    .btn-back {
-      background: #ffffff;
-      border: 1.5px solid var(--line);
-      color: var(--green-dark);
+    .watch-btn {
+      background: var(--gold);
+      color: #0c2612;
       font-weight: 800;
-      font-size: 0.9rem;
-      padding: 9px 18px;
-      border-radius: 999px;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      cursor: pointer;
-      box-shadow: var(--shadow-sm);
-      transition: all 0.2s ease;
-    }
-
-    .btn-back:hover {
-      background: var(--green-soft);
-      border-color: var(--green-mid);
-    }
-
-    .course-detail-layout {
-      display: grid;
-      grid-template-columns: 1.8fr 1fr;
-      gap: 32px;
-    }
-
-    .detail-main-card {
-      background: #ffffff;
-      border-radius: var(--radius-md);
-      border: 1.5px solid var(--line);
-      box-shadow: var(--shadow-card);
-      overflow: hidden;
-    }
-
-    .detail-thumbnail-hero {
-      position: relative;
-      background: linear-gradient(135deg, #0e3518 0%, #1d5f2c 60%, #2e7d32 100%);
-      color: #fff;
-      padding: 36px 30px;
-    }
-
-    .detail-badge-row {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      margin-bottom: 14px;
-      flex-wrap: wrap;
-    }
-
-    .detail-chip {
-      background: rgba(0, 0, 0, 0.4);
-      color: #fff;
-      font-size: 0.78rem;
-      font-weight: 800;
-      padding: 4px 10px;
-      border-radius: 6px;
-    }
-
-    .detail-thumbnail-hero h1 {
-      font-size: clamp(1.8rem, 3.2vw, 2.5rem);
-      font-weight: 900;
-      line-height: 1.2;
-      margin-bottom: 10px;
-    }
-
-    .detail-thumbnail-hero p {
-      font-size: 1.05rem;
-      color: #d8edd9;
-      max-width: 650px;
-    }
-
-    .detail-body {
-      padding: 30px;
-    }
-
-    .section-heading-h3 {
-      font-size: 1.35rem;
-      font-weight: 900;
-      color: var(--green-dark);
-      margin-bottom: 16px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      border-bottom: 1.5px solid var(--line);
-      padding-bottom: 8px;
-    }
-
-    /* Demo Sections */
-    .demo-grid-box {
-      background: var(--green-tint);
-      border: 1.5px solid var(--line);
-      border-radius: var(--radius-sm);
-      padding: 20px;
-      margin-bottom: 30px;
-    }
-
-    .video-frame-wrap {
-      position: relative;
-      width: 100%;
-      aspect-ratio: 16 / 9;
-      background: #000;
-      border-radius: 10px;
-      overflow: hidden;
-      margin-top: 12px;
-      box-shadow: 0 6px 18px rgba(0,0,0,0.15);
-    }
-
-    .video-frame-wrap iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
-
-    .notes-preview-box {
-      background: #ffffff;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      padding: 16px;
-      margin-top: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 14px;
-    }
-
-    .notes-info b { display: block; font-size: 0.95rem; color: var(--green-dark); }
-    .notes-info span { font-size: 0.82rem; color: var(--muted); }
-
-    .btn-sm-demo {
-      background: var(--green-mid);
-      color: #fff;
-      font-size: 0.85rem;
-      font-weight: 800;
-      padding: 8px 14px;
-      border-radius: 6px;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .btn-sm-demo:hover { background: var(--green-dark); }
-
-    /* Protected / Locked Lectures Section */
-    .locked-section-box {
-      background: #fff;
-      border: 2px dashed #f57f17;
-      border-radius: var(--radius-sm);
-      padding: 24px;
-      margin-top: 24px;
-    }
-
-    .locked-lecture-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 14px;
-      border-bottom: 1px solid var(--line);
-      font-size: 0.92rem;
-    }
-
-    .locked-lecture-item:last-child { border-bottom: none; }
-
-    .lock-status-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      font-size: 0.78rem;
-      font-weight: 800;
-      padding: 4px 10px;
-      border-radius: 999px;
-    }
-
-    .badge-locked { background: #ffebee; color: #c62828; }
-    .badge-unlocked { background: #e8f5e9; color: #2e7d32; }
-
-    .telegram-access-card {
-      background: linear-gradient(135deg, #0088cc 0%, #005580 100%);
-      color: #ffffff;
-      padding: 24px;
-      border-radius: 12px;
-      margin-top: 24px;
-      text-align: center;
-    }
-
-    .telegram-access-card h4 { font-size: 1.25rem; font-weight: 900; margin-bottom: 8px; }
-    .telegram-access-card p { font-size: 0.92rem; opacity: 0.9; margin-bottom: 16px; }
-
-    .tg-join-btn {
-      background: #ffffff;
-      color: #0088cc !important;
-      font-weight: 900;
       font-size: 0.95rem;
-      padding: 12px 24px;
-      border-radius: 999px;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      transition: transform 0.15s ease;
-    }
-
-    .tg-join-btn:hover { transform: translateY(-2px); }
-
-    /* Detail Sidebar Card */
-    .detail-sidebar-card {
-      background: #ffffff;
-      border-radius: var(--radius-md);
-      border: 1.5px solid var(--line);
-      box-shadow: var(--shadow-sm);
-      padding: 26px;
-      height: fit-content;
-      position: sticky;
-      top: 90px;
-    }
-
-    .sidebar-price-tag {
-      font-size: 2.2rem;
-      font-weight: 900;
-      color: var(--green-dark);
-      margin-bottom: 6px;
-    }
-
-    .sidebar-features {
-      list-style: none;
-      display: grid;
-      gap: 10px;
-      margin: 20px 0;
-      font-size: 0.9rem;
-      color: #233e29;
-    }
-
-    .sidebar-features li { display: flex; align-items: center; gap: 8px; }
-    .sidebar-features li::before { content: '✔'; color: var(--green-mid); font-weight: 900; }
-
-    /* Student Login Modal */
-    .modal-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(10, 31, 15, 0.75);
-      backdrop-filter: blur(6px);
-      z-index: 10000;
-      display: none;
+      padding: 12px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      display: flex;
       align-items: center;
       justify-content: center;
-      padding: 20px;
-    }
-
-    .modal-box {
-      background: #ffffff;
-      border-radius: var(--radius-md);
-      max-width: 440px;
+      gap: 8px;
       width: 100%;
-      border: 2px solid var(--gold);
-      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-      padding: 30px;
-      position: relative;
+      box-shadow: 0 4px 14px rgba(251, 192, 45, 0.3);
+      transition: transform 0.15s ease, background 0.15s ease;
     }
 
-    .modal-close {
-      position: absolute;
-      top: 14px;
-      right: 16px;
-      background: none;
-      border: none;
-      font-size: 1.4rem;
-      cursor: pointer;
-      color: var(--muted);
-      font-weight: 900;
+    .watch-btn:hover {
+      background: #ffca28;
+      transform: translateY(-2px);
     }
-
-    .login-form-alert {
-      padding: 10px;
-      border-radius: 6px;
-      font-size: 0.85rem;
-      font-weight: 700;
-      margin-bottom: 14px;
-      display: none;
-    }
-
-    .alert-error { background: #ffebee; color: #c62828; border: 1px solid #ffcdd2; }
-    .alert-success { background: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9; }
 
     /* Podcast Section */
     .podcast-section {
@@ -943,7 +650,9 @@
       transition: transform 0.15s;
     }
 
-    .yt-btn:hover { transform: translateY(-2px); }
+    .yt-btn:hover {
+      transform: translateY(-2px);
+    }
 
     .podcast-waveform-box {
       background: rgba(0, 0, 0, 0.35);
@@ -976,7 +685,7 @@
       100% { transform: scaleY(1); opacity: 1; }
     }
 
-    /* Founder / Mentor Section */
+    /* Founder / Mentor Section with HD Photo */
     .mentor-section {
       padding: 75px 0;
       background: #ffffff;
@@ -1011,6 +720,8 @@
       object-fit: cover;
       object-position: center top;
       display: block;
+      image-rendering: -webkit-optimize-contrast;
+      image-rendering: crisp-edges;
     }
 
     .mentor-content h2 {
@@ -1053,7 +764,7 @@
       font-size: 0.9rem;
     }
 
-    /* Contact Section */
+    /* Contact & Support Section */
     .contact-section {
       padding: 70px 0;
       background: var(--green-tint);
@@ -1071,33 +782,6 @@
       border-radius: var(--radius-md);
       padding: 30px;
       box-shadow: var(--shadow-sm);
-    }
-
-    .form-group {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      margin-bottom: 16px;
-    }
-
-    .form-group label {
-      font-weight: 700;
-      font-size: 0.88rem;
-    }
-
-    .form-group input, .form-group select, .form-group textarea {
-      padding: 11px 13px;
-      border: 1.5px solid var(--line);
-      border-radius: 8px;
-      font-family: inherit;
-      font-size: 0.95rem;
-      background: #fafcfa;
-      outline: none;
-    }
-
-    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
-      border-color: var(--green-mid);
-      background: #fff;
     }
 
     /* Sticky WhatsApp Floating Button */
@@ -1150,7 +834,6 @@
       .hero-grid { grid-template-columns: 1fr; text-align: center; }
       .hero p { margin: 0 auto 24px; }
       .hero-btns { justify-content: center; }
-      .course-detail-layout { grid-template-columns: 1fr; }
       .podcast-card { grid-template-columns: 1fr; }
       .mentor-box { grid-template-columns: 1fr; text-align: center; }
       .mentor-photo-wrapper { max-width: 300px; margin: 0 auto; }
@@ -1178,7 +861,8 @@
   <!-- Top Navigation -->
   <header>
     <div class="container nav-bar">
-      <div class="brand" onclick="goToHomeView()">
+      <a href="#top" class="brand">
+        <!-- Official A4 brand vector logo -->
         <div class="brand-logo-svg">
           <svg viewBox="0 0 160 160" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
             <rect width="160" height="160" fill="#14452f"/>
@@ -1187,25 +871,21 @@
           </svg>
         </div>
         <span>A4 AGRICULTURE</span>
-      </div>
+      </a>
 
       <nav>
         <ul id="navMenu">
-          <li><a href="#top" onclick="goToHomeView()">Courses</a></li>
+          <li><a href="#cbse11">CBSE 11</a></li>
+          <li><a href="#cbse12">CBSE 12</a></li>
+          <li><a href="#rbse11">RBSE 11</a></li>
+          <li><a href="#rbse12">RBSE 12</a></li>
+          <li><a href="#competitive">Supervisor & Officer</a></li>
           <li><a href="#podcast">Podcast</a></li>
           <li><a href="#mentor">Narendra Sir</a></li>
-          
-          <!-- Student Login / Account Area -->
-          <li id="authNavContainer">
-            <button class="nav-login-btn" id="openLoginBtn">
-              🔒 Student Login
+          <li id="userAuthNav">
+            <button id="navLoginBtn" onclick="handleAuthClick()" class="nav-pill-btn" style="background:var(--gold); color:#0c2612 !important; border:none; cursor:pointer; font-weight:800;">
+              👤 Student Login
             </button>
-          </li>
-
-          <li>
-            <a href="https://wa.me/918764560007?text=Hello%20A4%20Agriculture,%20I%20want%20to%20inquire%20about%20admissions" target="_blank" class="nav-pill-btn">
-              Direct WhatsApp
-            </a>
           </li>
         </ul>
       </nav>
@@ -1214,8 +894,8 @@
     </div>
   </header>
 
-  <!-- Quick Category Bar -->
-  <div class="quick-jump-strip" id="quickJumpStrip">
+  <!-- Sticky Quick Jump Sub-Navigation for Students -->
+  <div class="quick-jump-strip">
     <div class="container quick-jump-scroll">
       <span style="font-size:0.9rem; font-weight:900; color:var(--green-dark); margin-right:8px; display:inline-flex; align-items:center; gap:5px;">📚 COURSES:</span>
       <a href="#cbse11" class="jump-chip">CBSE Class 11</a>
@@ -1226,10 +906,9 @@
     </div>
   </div>
 
-  <!-- ==================== MAIN PAGE VIEW (HOME) ==================== -->
-  <main id="mainHomeView">
+  <main id="top">
     <!-- Hero Section -->
-    <section class="hero" id="top">
+    <section class="hero">
       <div class="container hero-grid">
         <div>
           <div class="hero-tag">
@@ -1251,7 +930,7 @@
           </div>
         </div>
 
-        <!-- Narendra Sir Portrait -->
+        <!-- Narendra Sir Real High-Definition Portrait Card -->
         <div class="hero-portrait-card">
           <div class="portrait-img-box">
             <img 
@@ -1272,11 +951,11 @@
       </div>
     </section>
 
-    <!-- Courses Grid Sections -->
+    <!-- Dedicated Course Sections -->
     <div class="courses-wrapper">
       <div class="container">
 
-        <!-- 1. CBSE CLASS 11 -->
+        <!-- ==================== 1. CBSE CLASS 11 ==================== -->
         <section class="course-category-block" id="cbse11">
           <div class="category-header">
             <div class="category-header-title">
@@ -1288,8 +967,7 @@
 
           <div class="course-grid-3">
             <!-- CBSE 11 Agriculture -->
-            <div class="course-card theme-agri" onclick="openCourseDetails('cbse11_agri')">
-              <span class="card-click-hint">Click for Demo & Syllabus ↗</span>
+            <div class="course-card theme-agri">
               <div class="course-banner">
                 <div class="banner-top-tags">
                   <span class="banner-tag-pill">CBSE CLASS 11</span>
@@ -1314,16 +992,14 @@
                   </div>
                   <span class="discount-pill">80% OFF</span>
                 </div>
-                <div class="card-actions">
-                  <span class="view-btn">View Course Details</span>
-                  <a href="https://wa.me/918764560007?text=Hello%20Narendra%20Sir,%20I%20want%20to%20enroll%20in%20CBSE%2011%20AGRICULTURE%20at%20Rs%2099" target="_blank" class="enroll-btn" onclick="event.stopPropagation();">WhatsApp</a>
-                </div>
+                <button onclick="openCoursePortal('cbse11_agri')" class="watch-btn">
+                  💳 Buy Now
+                </button>
               </div>
             </div>
 
             <!-- CBSE 11 Biology -->
-            <div class="course-card theme-bio" onclick="openCourseDetails('cbse11_bio')">
-              <span class="card-click-hint">Click for Demo & Syllabus ↗</span>
+            <div class="course-card theme-bio">
               <div class="course-banner">
                 <div class="banner-top-tags">
                   <span class="banner-tag-pill">CBSE CLASS 11</span>
@@ -1348,16 +1024,14 @@
                   </div>
                   <span class="discount-pill">80% OFF</span>
                 </div>
-                <div class="card-actions">
-                  <span class="view-btn">View Course Details</span>
-                  <a href="https://wa.me/918764560007?text=Hello%20Narendra%20Sir,%20I%20want%20to%20enroll%20in%20CBSE%2011%20BIOLOGY%20at%20Rs%2099" target="_blank" class="enroll-btn" onclick="event.stopPropagation();">WhatsApp</a>
-                </div>
+                <button onclick="openCoursePortal('cbse11_bio')" class="watch-btn">
+                  💳 Buy Now
+                </button>
               </div>
             </div>
 
             <!-- CBSE 11 Combo -->
-            <div class="course-card theme-combo" onclick="openCourseDetails('cbse11_combo')">
-              <span class="card-click-hint">Click for Demo & Syllabus ↗</span>
+            <div class="course-card theme-combo">
               <div class="course-banner">
                 <div class="banner-top-tags">
                   <span class="banner-tag-pill" style="background:#fbc02d; color:#000;">COMBINED PACKAGE</span>
@@ -1382,16 +1056,15 @@
                   </div>
                   <span class="discount-pill" style="background:#fff3e0; color:#f57f17;">76% OFF</span>
                 </div>
-                <div class="card-actions">
-                  <span class="view-btn">View Course Details</span>
-                  <a href="https://wa.me/918764560007?text=Hello%20Narendra%20Sir,%20I%20want%20to%20enroll%20in%20CBSE%2011%20AGRI%20%2B%20BIO%20COMBO%20at%20Rs%20169" target="_blank" class="enroll-btn" onclick="event.stopPropagation();">WhatsApp</a>
-                </div>
+                <button onclick="openCoursePortal('cbse11_combo')" class="watch-btn">
+                  💳 Buy Now
+                </button>
               </div>
             </div>
           </div>
         </section>
 
-        <!-- 2. CBSE CLASS 12 -->
+        <!-- ==================== 2. CBSE CLASS 12 ==================== -->
         <section class="course-category-block" id="cbse12">
           <div class="category-header">
             <div class="category-header-title">
@@ -1402,8 +1075,8 @@
           </div>
 
           <div class="course-grid-3">
-            <div class="course-card theme-agri" onclick="openCourseDetails('cbse12_agri')">
-              <span class="card-click-hint">Click for Demo & Syllabus ↗</span>
+            <!-- CBSE 12 Agriculture -->
+            <div class="course-card theme-agri">
               <div class="course-banner">
                 <div class="banner-top-tags">
                   <span class="banner-tag-pill">CBSE CLASS 12</span>
@@ -1428,15 +1101,14 @@
                   </div>
                   <span class="discount-pill">80% OFF</span>
                 </div>
-                <div class="card-actions">
-                  <span class="view-btn">View Course Details</span>
-                  <a href="https://wa.me/918764560007?text=Hello%20Narendra%20Sir,%20I%20want%20to%20enroll%20in%20CBSE%2012%20AGRICULTURE%20at%20Rs%2099" target="_blank" class="enroll-btn" onclick="event.stopPropagation();">WhatsApp</a>
-                </div>
+                <button onclick="openCoursePortal('cbse12_agri')" class="watch-btn">
+                  💳 Buy Now
+                </button>
               </div>
             </div>
 
-            <div class="course-card theme-bio" onclick="openCourseDetails('cbse12_bio')">
-              <span class="card-click-hint">Click for Demo & Syllabus ↗</span>
+            <!-- CBSE 12 Biology -->
+            <div class="course-card theme-bio">
               <div class="course-banner">
                 <div class="banner-top-tags">
                   <span class="banner-tag-pill">CBSE CLASS 12</span>
@@ -1461,15 +1133,14 @@
                   </div>
                   <span class="discount-pill">80% OFF</span>
                 </div>
-                <div class="card-actions">
-                  <span class="view-btn">View Course Details</span>
-                  <a href="https://wa.me/918764560007?text=Hello%20Narendra%20Sir,%20I%20want%20to%20enroll%20in%20CBSE%2012%20BIOLOGY%20at%20Rs%2099" target="_blank" class="enroll-btn" onclick="event.stopPropagation();">WhatsApp</a>
-                </div>
+                <button onclick="openCoursePortal('cbse12_bio')" class="watch-btn">
+                  💳 Buy Now
+                </button>
               </div>
             </div>
 
-            <div class="course-card theme-combo" onclick="openCourseDetails('cbse12_combo')">
-              <span class="card-click-hint">Click for Demo & Syllabus ↗</span>
+            <!-- CBSE 12 Combo -->
+            <div class="course-card theme-combo">
               <div class="course-banner">
                 <div class="banner-top-tags">
                   <span class="banner-tag-pill" style="background:#fbc02d; color:#000;">FLAGSHIP BATCH</span>
@@ -1485,7 +1156,7 @@
                 <ul class="features-list">
                   <li>Dual Subject Comprehensive Syllabus</li>
                   <li>Pre-Board Mock Exam Series</li>
-                  <li>Direct WhatsApp Doubt Clearing</li>
+                  <li>Direct Guidance with Narendra Sir</li>
                 </ul>
                 <div class="price-row">
                   <div>
@@ -1494,16 +1165,15 @@
                   </div>
                   <span class="discount-pill" style="background:#fff3e0; color:#f57f17;">76% OFF</span>
                 </div>
-                <div class="card-actions">
-                  <span class="view-btn">View Course Details</span>
-                  <a href="https://wa.me/918764560007?text=Hello%20Narendra%20Sir,%20I%20want%20to%20enroll%20in%20CBSE%2012%20AGRI%20%2B%20BIO%20COMBO%20at%20Rs%20169" target="_blank" class="enroll-btn" onclick="event.stopPropagation();">WhatsApp</a>
-                </div>
+                <button onclick="openCoursePortal('cbse12_combo')" class="watch-btn">
+                  💳 Buy Now
+                </button>
               </div>
             </div>
           </div>
         </section>
 
-        <!-- 3. RBSE CLASS 11 -->
+        <!-- ==================== 3. RBSE CLASS 11 ==================== -->
         <section class="course-category-block" id="rbse11">
           <div class="category-header">
             <div class="category-header-title">
@@ -1514,8 +1184,8 @@
           </div>
 
           <div class="course-grid-3">
-            <div class="course-card theme-agri" onclick="openCourseDetails('rbse11_agri')">
-              <span class="card-click-hint">Click for Demo & Syllabus ↗</span>
+            <!-- RBSE 11 Agriculture -->
+            <div class="course-card theme-agri">
               <div class="course-banner">
                 <div class="banner-top-tags">
                   <span class="banner-tag-pill">RBSE CLASS 11</span>
@@ -1540,15 +1210,14 @@
                   </div>
                   <span class="discount-pill">80% OFF</span>
                 </div>
-                <div class="card-actions">
-                  <span class="view-btn">View Course Details</span>
-                  <a href="https://wa.me/918764560007?text=Hello%20Narendra%20Sir,%20I%20want%20to%20enroll%20in%20RBSE%2011%20AGRICULTURE%20at%20Rs%2099" target="_blank" class="enroll-btn" onclick="event.stopPropagation();">WhatsApp</a>
-                </div>
+                <button onclick="openCoursePortal('rbse11_agri')" class="watch-btn">
+                  💳 Buy Now
+                </button>
               </div>
             </div>
 
-            <div class="course-card theme-bio" onclick="openCourseDetails('rbse11_bio')">
-              <span class="card-click-hint">Click for Demo & Syllabus ↗</span>
+            <!-- RBSE 11 Biology -->
+            <div class="course-card theme-bio">
               <div class="course-banner">
                 <div class="banner-top-tags">
                   <span class="banner-tag-pill">RBSE CLASS 11</span>
@@ -1573,15 +1242,14 @@
                   </div>
                   <span class="discount-pill">80% OFF</span>
                 </div>
-                <div class="card-actions">
-                  <span class="view-btn">View Course Details</span>
-                  <a href="https://wa.me/918764560007?text=Hello%20Narendra%20Sir,%20I%20want%20to%20enroll%20in%20RBSE%2011%20BIOLOGY%20at%20Rs%2099" target="_blank" class="enroll-btn" onclick="event.stopPropagation();">WhatsApp</a>
-                </div>
+                <button onclick="openCoursePortal('rbse11_bio')" class="watch-btn">
+                  💳 Buy Now
+                </button>
               </div>
             </div>
 
-            <div class="course-card theme-combo" onclick="openCourseDetails('rbse11_combo')">
-              <span class="card-click-hint">Click for Demo & Syllabus ↗</span>
+            <!-- RBSE 11 Combo -->
+            <div class="course-card theme-combo">
               <div class="course-banner">
                 <div class="banner-top-tags">
                   <span class="banner-tag-pill" style="background:#fbc02d; color:#000;">STATE VALUE PACK</span>
@@ -1606,16 +1274,15 @@
                   </div>
                   <span class="discount-pill" style="background:#fff3e0; color:#f57f17;">76% OFF</span>
                 </div>
-                <div class="card-actions">
-                  <span class="view-btn">View Course Details</span>
-                  <a href="https://wa.me/918764560007?text=Hello%20Narendra%20Sir,%20I%20want%20to%20enroll%20in%20RBSE%2011%20AGRI%20%2B%20BIO%20COMBO%20at%20Rs%20169" target="_blank" class="enroll-btn" onclick="event.stopPropagation();">WhatsApp</a>
-                </div>
+                <button onclick="openCoursePortal('rbse11_combo')" class="watch-btn">
+                  💳 Buy Now
+                </button>
               </div>
             </div>
           </div>
         </section>
 
-        <!-- 4. RBSE CLASS 12 -->
+        <!-- ==================== 4. RBSE CLASS 12 ==================== -->
         <section class="course-category-block" id="rbse12">
           <div class="category-header">
             <div class="category-header-title">
@@ -1626,8 +1293,8 @@
           </div>
 
           <div class="course-grid-3">
-            <div class="course-card theme-agri" onclick="openCourseDetails('rbse12_agri')">
-              <span class="card-click-hint">Click for Demo & Syllabus ↗</span>
+            <!-- RBSE 12 Agriculture -->
+            <div class="course-card theme-agri">
               <div class="course-banner">
                 <div class="banner-top-tags">
                   <span class="banner-tag-pill">RBSE CLASS 12</span>
@@ -1652,15 +1319,14 @@
                   </div>
                   <span class="discount-pill">80% OFF</span>
                 </div>
-                <div class="card-actions">
-                  <span class="view-btn">View Course Details</span>
-                  <a href="https://wa.me/918764560007?text=Hello%20Narendra%20Sir,%20I%20want%20to%20enroll%20in%20RBSE%2012%20AGRICULTURE%20at%20Rs%2099" target="_blank" class="enroll-btn" onclick="event.stopPropagation();">WhatsApp</a>
-                </div>
+                <button onclick="openCoursePortal('rbse12_agri')" class="watch-btn">
+                  💳 Buy Now
+                </button>
               </div>
             </div>
 
-            <div class="course-card theme-bio" onclick="openCourseDetails('rbse12_bio')">
-              <span class="card-click-hint">Click for Demo & Syllabus ↗</span>
+            <!-- RBSE 12 Biology -->
+            <div class="course-card theme-bio">
               <div class="course-banner">
                 <div class="banner-top-tags">
                   <span class="banner-tag-pill">RBSE CLASS 12</span>
@@ -1685,15 +1351,14 @@
                   </div>
                   <span class="discount-pill">80% OFF</span>
                 </div>
-                <div class="card-actions">
-                  <span class="view-btn">View Course Details</span>
-                  <a href="https://wa.me/918764560007?text=Hello%20Narendra%20Sir,%20I%20want%20to%20enroll%20in%20RBSE%2012%20BIOLOGY%20at%20Rs%2099" target="_blank" class="enroll-btn" onclick="event.stopPropagation();">WhatsApp</a>
-                </div>
+                <button onclick="openCoursePortal('rbse12_bio')" class="watch-btn">
+                  💳 Buy Now
+                </button>
               </div>
             </div>
 
-            <div class="course-card theme-combo" onclick="openCourseDetails('rbse12_combo')">
-              <span class="card-click-hint">Click for Demo & Syllabus ↗</span>
+            <!-- RBSE 12 Combo -->
+            <div class="course-card theme-combo">
               <div class="course-banner">
                 <div class="banner-top-tags">
                   <span class="banner-tag-pill" style="background:#fbc02d; color:#000;">TOPPER'S BATCH</span>
@@ -1718,16 +1383,15 @@
                   </div>
                   <span class="discount-pill" style="background:#fff3e0; color:#f57f17;">76% OFF</span>
                 </div>
-                <div class="card-actions">
-                  <span class="view-btn">View Course Details</span>
-                  <a href="https://wa.me/918764560007?text=Hello%20Narendra%20Sir,%20I%20want%20to%20enroll%20in%20RBSE%2012%20AGRI%20%2B%20BIO%20COMBO%20at%20Rs%20169" target="_blank" class="enroll-btn" onclick="event.stopPropagation();">WhatsApp</a>
-                </div>
+                <button onclick="openCoursePortal('rbse12_combo')" class="watch-btn">
+                  💳 Buy Now
+                </button>
               </div>
             </div>
           </div>
         </section>
 
-        <!-- 5. COMPETITIVE RECRUITMENT EXAMS -->
+        <!-- ==================== 5. COMPETITIVE RECRUITMENT EXAMS ==================== -->
         <section class="course-category-block" id="competitive">
           <div class="category-header">
             <div class="category-header-title">
@@ -1738,8 +1402,8 @@
           </div>
 
           <div class="course-grid-3">
-            <div class="course-card theme-agri" onclick="openCourseDetails('supervisor')">
-              <span class="card-click-hint">Click for Demo & Syllabus ↗</span>
+            <!-- Agriculture Supervisor -->
+            <div class="course-card theme-agri">
               <div class="course-banner">
                 <div class="banner-top-tags">
                   <span class="banner-tag-pill" style="background:#fbc02d; color:#000;">GOVT EXAM</span>
@@ -1764,15 +1428,14 @@
                   </div>
                   <span class="discount-pill">67% OFF</span>
                 </div>
-                <div class="card-actions">
-                  <span class="view-btn">View Course Details</span>
-                  <a href="https://wa.me/918764560007?text=Hello%20Narendra%20Sir,%20I%20want%20to%20inquire%20about%20the%20Agriculture%20Supervisor%20Batch" target="_blank" class="enroll-btn" onclick="event.stopPropagation();">WhatsApp</a>
-                </div>
+                <button onclick="openCoursePortal('agri_supervisor')" class="watch-btn">
+                  💳 Buy Now
+                </button>
               </div>
             </div>
 
-            <div class="course-card theme-officer" onclick="openCourseDetails('fso')">
-              <span class="card-click-hint">Click for Demo & Syllabus ↗</span>
+            <!-- FSO Batch -->
+            <div class="course-card theme-officer">
               <div class="course-banner">
                 <div class="banner-top-tags">
                   <span class="banner-tag-pill" style="background:#0288d1; color:#fff;">OFFICER CADRE</span>
@@ -1797,15 +1460,14 @@
                   </div>
                   <span class="discount-pill">64% OFF</span>
                 </div>
-                <div class="card-actions">
-                  <span class="view-btn">View Course Details</span>
-                  <a href="https://wa.me/918764560007?text=Hello%20Narendra%20Sir,%20I%20want%20to%20inquire%20about%20the%20FSO%20Officer%20Batch" target="_blank" class="enroll-btn" onclick="event.stopPropagation();">WhatsApp</a>
-                </div>
+                <button onclick="openCoursePortal('fso_officer')" class="watch-btn">
+                  💳 Buy Now
+                </button>
               </div>
             </div>
 
-            <div class="course-card theme-officer" onclick="openCourseDetails('ao_aao')">
-              <span class="card-click-hint">Click for Demo & Syllabus ↗</span>
+            <!-- AO / AAO Batch -->
+            <div class="course-card theme-officer">
               <div class="course-banner">
                 <div class="banner-top-tags">
                   <span class="banner-tag-pill" style="background:#0288d1; color:#fff;">GAZETTED POST</span>
@@ -1830,10 +1492,9 @@
                   </div>
                   <span class="discount-pill">66% OFF</span>
                 </div>
-                <div class="card-actions">
-                  <span class="view-btn">View Course Details</span>
-                  <a href="https://wa.me/918764560007?text=Hello%20Narendra%20Sir,%20I%20want%20to%20inquire%20about%20the%20AO%20and%20AAO%20Officer%20Batch" target="_blank" class="enroll-btn" onclick="event.stopPropagation();">WhatsApp</a>
-                </div>
+                <button onclick="openCoursePortal('ao_aao_master')" class="watch-btn">
+                  💳 Buy Now
+                </button>
               </div>
             </div>
           </div>
@@ -1842,7 +1503,7 @@
       </div>
     </div>
 
-    <!-- Podcast Section -->
+    <!-- Podcast Section (YouTube Exclusive) -->
     <section class="podcast-section" id="podcast">
       <div class="container">
         <div class="podcast-card">
@@ -1858,12 +1519,13 @@
               <a href="https://youtube.com" target="_blank" class="yt-btn">
                 ▶ Watch on YouTube
               </a>
-              <a href="https://wa.me/918764560007?text=Hello%20Narendra%20Sir,%20please%20share%20your%20podcast%20playlist%20link" target="_blank" class="enroll-btn" style="padding:12px 20px; border-radius:999px;">
+              <a href="https://wa.me/918764560007?text=Hello%20Narendra%20Sir,%20please%20share%20your%20podcast%20playlist%20link" target="_blank" class="btn-gold" style="padding:12px 20px;">
                 💬 Request Podcast Playlist
               </a>
             </div>
           </div>
 
+          <!-- Waveform Player Mockup -->
           <div class="podcast-waveform-box">
             <div style="display:flex; justify-content:space-between; align-items:center;">
               <span style="font-weight:800; color:var(--gold); font-size:0.85rem;">● EPISODE STREAMING</span>
@@ -1889,7 +1551,7 @@
       </div>
     </section>
 
-    <!-- Mentor Section -->
+    <!-- Mentor Section featuring Narendra Sir's Real High-Definition Photo -->
     <section class="mentor-section" id="mentor">
       <div class="container">
         <div class="mentor-box">
@@ -1919,22 +1581,22 @@
       </div>
     </section>
 
-    <!-- Contact Section -->
+    <!-- Contact & Student Support Desk -->
     <section class="contact-section" id="contact">
       <div class="container contact-grid">
         <div>
           <h2 style="font-size:2.2rem; font-weight:900; color:var(--green-dark); margin-bottom:12px;">
-            Get in Touch with Narendra Sir
+            Student Help & Admission Support
           </h2>
           <p style="color:var(--muted); font-size:1.02rem; line-height:1.6; margin-bottom:24px;">
-            Have questions about your board syllabus, study material, or upcoming recruitment examinations? Send a message and our team will guide you immediately.
+            Kisi bhi batch me online admission, study material ya syllabus ke sawal ke liye seedha Narendra Sir aur team se connect karein.
           </p>
 
           <div style="display:grid; gap:12px;">
             <a href="https://wa.me/918764560007" target="_blank" style="background:#ffffff; border:1px solid var(--line); padding:16px; border-radius:10px; display:flex; align-items:center; gap:14px;">
               <div style="font-size:1.8rem;">💬</div>
               <div>
-                <b style="font-size:0.8rem; color:var(--green-mid); display:block;">DIRECT WHATSAPP DESK</b>
+                <b style="font-size:0.8rem; color:var(--green-mid); display:block;">OFFICIAL WHATSAPP HELPLINE</b>
                 <span style="font-size:1.1rem; font-weight:800;">+91 8764560007</span>
               </div>
             </a>
@@ -1949,233 +1611,31 @@
           </div>
         </div>
 
-        <div class="contact-card">
-          <form id="contactForm">
-            <h3 style="font-size:1.3rem; font-weight:800; color:var(--green-dark); margin-bottom:16px;">
-              Quick WhatsApp Enrollment Desk
-            </h3>
-
-            <div class="form-group">
-              <label for="nameInput">Student Name *</label>
-              <input type="text" id="nameInput" required placeholder="e.g. Rahul Sharma">
-            </div>
-
-            <div class="form-group">
-              <label for="phoneInput">WhatsApp Number *</label>
-              <input type="tel" id="phoneInput" required placeholder="e.g. 9876543210">
-            </div>
-
-            <div class="form-group">
-              <label for="courseSelect">Selected Course *</label>
-              <select id="courseSelect" required>
-                <option value="CBSE 11 Agriculture (₹99)">CBSE 11 Agriculture (₹99)</option>
-                <option value="CBSE 11 Biology (₹99)">CBSE 11 Biology (₹99)</option>
-                <option value="CBSE 11 Combo (₹169)">CBSE 11 Combo (₹169)</option>
-                <option value="CBSE 12 Agriculture (₹99)">CBSE 12 Agriculture (₹99)</option>
-                <option value="CBSE 12 Biology (₹99)">CBSE 12 Biology (₹99)</option>
-                <option value="CBSE 12 Combo (₹169)">CBSE 12 Combo (₹169)</option>
-                <option value="RBSE 11 Agriculture (₹99)">RBSE 11 Agriculture (₹99)</option>
-                <option value="RBSE 11 Biology (₹99)">RBSE 11 Biology (₹99)</option>
-                <option value="RBSE 11 Combo (₹169)">RBSE 11 Combo (₹169)</option>
-                <option value="RBSE 12 Agriculture (₹99)">RBSE 12 Agriculture (₹99)</option>
-                <option value="RBSE 12 Biology (₹99)">RBSE 12 Biology (₹99)</option>
-                <option value="RBSE 12 Combo (₹169)">RBSE 12 Combo (₹169)</option>
-                <option value="Agriculture Supervisor Batch (₹499)">Agriculture Supervisor Batch (₹499)</option>
-                <option value="Food Safety Officer (FSO) (₹899)">Food Safety Officer (FSO) (₹899)</option>
-                <option value="AO / AAO Master Batch (₹999)">AO / AAO Master Batch (₹999)</option>
-              </select>
-            </div>
-
-            <div class="form-group">
-              <label for="queryInput">Note / Message</label>
-              <textarea id="queryInput" rows="3" placeholder="Tell us your target exam year or specific doubt..."></textarea>
-            </div>
-
-            <button type="submit" class="btn-gold" style="width:100%; justify-content:center; border:none; cursor:pointer;">
-              📲 Forward to WhatsApp (8764560007)
-            </button>
-          </form>
+        <div class="contact-card" style="display:flex; flex-direction:column; justify-content:center;">
+          <h3 style="font-size:1.35rem; font-weight:900; color:var(--green-dark); margin-bottom:12px;">
+            ⚡ Online Course Instant Access Guide
+          </h3>
+          <p style="color:var(--muted); font-size:0.95rem; line-height:1.6; margin-bottom:16px;">
+            Courses website par direct unlock karne ke liye:
+          </p>
+          <ul style="list-style:none; display:grid; gap:10px; font-size:0.92rem; color:var(--charcoal); margin-bottom:20px;">
+            <li><b>1.</b> Upar kisi bhi course par <b>"Buy Now"</b> button par click karein.</li>
+            <li><b>2.</b> Apne <b>Google Account</b> se login karein.</li>
+            <li><b>3.</b> UPI/PhonePe/GPay se payment complete karein.</li>
+            <li><b>4.</b> Course usi waqt unlock hokar chapter-wise video play ho jayegi!</li>
+          </ul>
+          <a href="https://wa.me/918764560007?text=Hello%20Narendra%20Sir,%20mujhe%20technical%20help%20chahiye" target="_blank" class="btn-gold" style="justify-content:center; text-align:center;">
+            Direct Support on WhatsApp
+          </a>
         </div>
       </div>
     </section>
   </main>
 
-  <!-- ==================== PAGE 2: COURSE DETAILS VIEW (SEPARATE VIEW) ==================== -->
-  <section id="courseDetailsView">
-    <div class="container">
-      <div class="back-btn-strip">
-        <button class="btn-back" onclick="goToHomeView()">
-          ← Back to All Courses
-        </button>
-      </div>
-
-      <div class="course-detail-layout">
-        <!-- Main Column -->
-        <div class="detail-main-card">
-          <!-- Thumbnail & Header Banner -->
-          <div class="detail-thumbnail-hero" id="detailBannerBox">
-            <div class="detail-badge-row">
-              <span class="detail-chip" id="detailCatChip">CBSE 12</span>
-              <span class="detail-chip" style="color:var(--gold);">Mentor: Narendra Sir</span>
-            </div>
-            <h1 id="detailTitle">Course Title</h1>
-            <p id="detailSubTitle">Subtitle & syllabus highlights...</p>
-          </div>
-
-          <div class="detail-body">
-            <!-- 1. Overview -->
-            <div style="margin-bottom: 28px;">
-              <h3 class="section-heading-h3">📖 Course Overview</h3>
-              <p id="detailLongDesc" style="color:var(--muted); line-height: 1.7; font-size: 0.98rem;">Detailed course explanation goes here.</p>
-            </div>
-
-            <!-- 2. Free Demo Video Section -->
-            <div class="demo-grid-box">
-              <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-                <h3 style="font-size:1.15rem; font-weight:900; color:var(--green-dark);">
-                  🎥 Free Demo Class (Full Screen Available)
-                </h3>
-                <span style="background:var(--gold); color:#000; font-size:0.75rem; font-weight:800; padding:2px 8px; border-radius:4px;">OPEN TO ALL</span>
-              </div>
-              <p style="font-size:0.86rem; color:var(--muted); margin-top:4px;">Sample preview lecture by Narendra Sir. Watch this to experience the teaching methodology.</p>
-              
-              <div class="video-frame-wrap" id="demoVideoContainer">
-                <!-- Embedded Demo Video -->
-                <iframe id="demoVideoIframe" src="https://www.youtube.com/embed/dQw4w9WgXcQ" allowfullscreen></iframe>
-              </div>
-            </div>
-
-            <!-- 3. Free Demo Notes Section -->
-            <div class="demo-grid-box" style="background:#fff; border-color:var(--line);">
-              <h3 style="font-size:1.15rem; font-weight:900; color:var(--green-dark);">
-                📑 Free Sample Chapter Notes (PDF Preview)
-              </h3>
-              <p style="font-size:0.86rem; color:var(--muted); margin-top:4px;">Download and read the sample color-coded handwritten notes before purchasing.</p>
-              <div class="notes-preview-box">
-                <div class="notes-info">
-                  <b id="demoNotesTitle">Demo Chapter 1 - Fundamental Concepts.pdf</b>
-                  <span>High-yield exam summary sheet • Prepared by Narendra Sir</span>
-                </div>
-                <a href="#top" id="demoNotesBtn" class="btn-sm-demo" target="_blank">View Sample Notes</a>
-              </div>
-            </div>
-
-            <!-- 4. Protected / Locked Content & Telegram Video Stream Link -->
-            <div class="locked-section-box">
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
-                <h3 style="font-size:1.25rem; font-weight:900; color:#b71c1c; display:flex; align-items:center; gap:8px;">
-                  🔒 Protected Course Lectures & Materials
-                </h3>
-                <span id="lockStatusPill" class="lock-status-badge badge-locked">ACCESS RESTRICTED</span>
-              </div>
-              <p style="font-size:0.88rem; color:var(--muted); margin-bottom:16px;">
-                Complete syllabus lectures and uncompressed study materials are secured. Only verified students who logged in with their Narendra Sir assigned credentials can stream.
-              </p>
-
-              <!-- Modules List -->
-              <div style="background:#fafafa; border:1px solid var(--line); border-radius:8px;">
-                <div class="locked-lecture-item">
-                  <span><b>Module 1:</b> Core Theory & Detailed Lecture Series (15 Hours)</span>
-                  <span class="module-access-badge lock-status-badge badge-locked">Locked 🔒</span>
-                </div>
-                <div class="locked-lecture-item">
-                  <span><b>Module 2:</b> Deep-Dive Diagnostic Diagrams & Lab Manuals</span>
-                  <span class="module-access-badge lock-status-badge badge-locked">Locked 🔒</span>
-                </div>
-                <div class="locked-lecture-item">
-                  <span><b>Module 3:</b> 10-Year Solved Board & Supervisor Question Banks</span>
-                  <span class="module-access-badge lock-status-badge badge-locked">Locked 🔒</span>
-                </div>
-                <div class="locked-lecture-item">
-                  <span><b>Module 4:</b> Pre-Exam Rapid Revision Crash Modules</span>
-                  <span class="module-access-badge lock-status-badge badge-locked">Locked 🔒</span>
-                </div>
-              </div>
-
-              <!-- Private Telegram Redirect Box -->
-              <div class="telegram-access-card" id="telegramCardBox">
-                <h4>🚀 Private Student Channel Access</h4>
-                <p id="tgBoxText">
-                  Please login with your provided Student ID and Password to unlock private lecture videos directly on our secured channel.
-                </p>
-                <div id="tgActionContainer">
-                  <button class="btn-gold" onclick="openLoginModal()" style="border:none;">
-                    🔑 Click Here to Student Login
-                  </button>
-                </div>
-              </div>
-            </div>
-
-          </div>
-        </div>
-
-        <!-- Sidebar Sticky Column -->
-        <div class="detail-sidebar-card">
-          <span style="font-size:0.8rem; font-weight:800; color:var(--muted); text-transform:uppercase;">Course Enrollment</span>
-          <div class="sidebar-price-tag" id="detailPriceFinal">₹99</div>
-          <div style="font-size:0.85rem; color:var(--muted); margin-bottom:14px;">One-time fee • Complete Academic Year Access</div>
-          
-          <a href="#" id="detailWhatsAppEnrollBtn" target="_blank" class="enroll-btn" style="width:100%; font-size:1rem; padding:12px; margin-bottom:16px;">
-            💬 Enroll via WhatsApp
-          </a>
-
-          <ul class="sidebar-features">
-            <li>HD Lectures by Narendra Sir</li>
-            <li>No Public Sharing / Strict Privacy</li>
-            <li>Access on Phone & Laptop</li>
-            <li>Chapter-wise Handwritten PDFs</li>
-            <li>Direct Doubt Support Desk</li>
-          </ul>
-
-          <div style="background:var(--green-tint); border:1px solid var(--line); padding:14px; border-radius:8px; font-size:0.84rem; color:var(--charcoal);">
-            <b>Need Credentials?</b><br>
-            Once you enroll, Narendra Sir will personally send your unique Student Username & Password on your WhatsApp.
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ==================== STUDENT LOGIN MODAL ==================== -->
-  <div class="modal-overlay" id="loginModal">
-    <div class="modal-box">
-      <button class="modal-close" id="closeLoginBtn">&times;</button>
-      <div style="text-align:center; margin-bottom:18px;">
-        <span style="font-size:2rem;">🌱</span>
-        <h3 style="font-size:1.4rem; font-weight:900; color:var(--green-dark);">Student Course Login</h3>
-        <p style="font-size:0.85rem; color:var(--muted);">Enter the Username & Password provided by Narendra Sir</p>
-      </div>
-
-      <div class="login-form-alert alert-error" id="loginErrorAlert"></div>
-      <div class="login-form-alert alert-success" id="loginSuccessAlert"></div>
-
-      <form id="studentLoginForm">
-        <div class="form-group">
-          <label for="studentUsername">Student ID / Username</label>
-          <input type="text" id="studentUsername" required placeholder="e.g. student1">
-        </div>
-        <div class="form-group">
-          <label for="studentPassword">Password</label>
-          <input type="password" id="studentPassword" required placeholder="••••••••">
-        </div>
-
-        <button type="submit" class="btn-gold" style="width:100%; justify-content:center; border:none; cursor:pointer; margin-top:8px;">
-          Unlock Course Access
-        </button>
-      </form>
-
-      <div style="font-size:0.8rem; color:var(--muted); text-align:center; margin-top:16px;">
-        Forgotten password or want fresh access?<br>
-        <a href="https://wa.me/918764560007?text=Hello%20Narendra%20Sir,%20I%20need%20my%20Student%20Login%20Credentials" target="_blank" style="color:var(--green-mid); font-weight:800;">Contact Narendra Sir on WhatsApp</a>
-      </div>
-    </div>
-  </div>
-
   <!-- Persistent Floating WhatsApp Button -->
   <a href="https://wa.me/918764560007?text=Hello%20A4%20Agriculture,%20I%20want%20to%20inquire%20about%20courses" target="_blank" class="floating-wa" aria-label="WhatsApp Us">
     <svg viewBox="0 0 24 24">
-      <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.312.045-.694.074-1.127-.065-.272-.087-.628-.206-1.077-.401-1.895-.824-3.125-2.753-3.22-2.881-.096-.128-.769-1.025-.769-1.956 0-.93.486-1.387.66-1.579.173-.193.376-.241.502-.241.125 0 .25.002.361.007.117.006.273-.044.428.328.157.378.536 1.309.584 1.405.048.096.08.209.016.337-.064.128-.096.208-.191.32-.096.112-.202.25-.288.337-.096.096-.196.2-.084.392.112.193.498.82 1.069 1.328.736.654 1.357.857 1.55.953.192.096.304.08.416-.048.112-.128.48-.608.769-.128.208-.256.176-.432.08-.176.096-1.12.528-1.312.624-.192.096-.32.144-.368.224-.048.08-.048.464.096.869z"/>
-      <path d="M12 2c5.514 0 10 4.486 10 10s-4.486 10-10 10c-1.748 0-3.394-.457-4.834-1.261l-5.166 1.356 1.383-5.05c-.873-1.487-1.383-3.225-1.383-5.045 0-5.514 4.486-10 10-10zm0-2c-6.627 0-12 5.373-12 12 0 2.147.564 4.164 1.55 5.918l-1.55 5.666 5.823-1.528c1.7 1.002 3.684 1.583 5.793 1.583 6.627 0 12-5.373 12-12s-5.373-12-12-12z"/>
+      <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.18-.573c.978.58 2.057.886 3.151.887 3.18 0 5.767-2.587 5.768-5.766.001-3.18-2.585-5.767-5.768-5.768zm0 10.455c-.98 0-1.939-.264-2.776-.764l-.2-.119-1.294.34.345-1.261-.13-.207a4.67 4.67 0 0 1-.72-2.477c0-2.581 2.1-4.682 4.682-4.682 2.581 0 4.682 2.101 4.682 4.682 0 2.581-2.101 4.682-4.682 4.682z"/>
     </svg>
   </a>
 
@@ -2183,409 +1643,438 @@
   <footer>
     <div class="container footer-content">
       <div>
-        <b>© <span id="currentYear"></span> A4 AGRICULTURE</b>. Mentored by Narendra Sir. All Rights Reserved.
+        <b>A4 AGRICULTURE</b> &copy; 2026. Mentored by Narendra Sir. All Rights Reserved.
       </div>
       <div>
-        <span>Helpline: +91 8764560007</span> | <span>Rajasthan, India</span>
+        Designed for Agricultural Excellence
       </div>
     </div>
   </footer>
 
-  <!-- ==================== JAVASCRIPT: DATA & INTERACTIONS ==================== -->
+  <!-- ================= COURSE PLAYER & CHECKOUT POPUP MODAL ================= -->
+  <div id="courseModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:99999; backdrop-filter:blur(5px); overflow-y:auto; padding:20px;">
+    <div style="max-width:940px; margin:30px auto; background:#fff; border-radius:16px; overflow:hidden; box-shadow:0 10px 40px rgba(0,0,0,0.5); border:2px solid var(--gold);">
+      
+      <!-- Modal Header -->
+      <div style="background:var(--green-dark); color:#fff; padding:18px 24px; display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <span id="modalCategoryTag" style="font-size:0.75rem; background:var(--gold); color:#000; padding:2px 8px; border-radius:4px; font-weight:800;">COURSE</span>
+          <h3 id="modalCourseTitle" style="margin-top:4px; font-size:1.35rem; font-weight:900;">Course Portal</h3>
+        </div>
+        <button onclick="closeCoursePortal()" style="background:none; border:none; color:#fff; font-size:2rem; cursor:pointer; line-height:1;">&times;</button>
+      </div>
+
+      <!-- Modal Body -->
+      <div style="padding:24px;">
+        
+        <!-- Video Player Area (Unlock hone par show hoga) -->
+        <div id="videoPlayerBox" style="display:none; margin-bottom:20px;">
+          <h4 id="activeLessonName" style="color:var(--green-dark); margin-bottom:10px; font-size:1.15rem;">Chapter Lecture</h4>
+          <div style="position:relative; width:100%; aspect-ratio:16/9; background:#000; border-radius:10px; overflow:hidden;">
+            <iframe id="mainEmbedFrame" src="" style="width:100%; height:100%; border:none;" allowfullscreen="true" allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"></iframe>
+          </div>
+        </div>
+
+        <!-- Lock Notice (Course kharida na ho tab dikhega) -->
+        <div id="lockNoticeBox" style="background:#fff3cd; border:1.5px solid #ffeeba; border-radius:12px; padding:24px; text-align:center; margin-bottom:24px;">
+          <h3 style="color:#856404; margin-bottom:8px; font-size:1.3rem;">🔒 Course Content Locked</h3>
+          <p style="color:#666; font-size:0.98rem; margin-bottom:16px;">
+            Full conceptual recorded classes, handwritten PDF notes aur test series unlock karne ke liye course join karein.
+          </p>
+          <div style="display:flex; justify-content:center; align-items:center; gap:16px; flex-wrap:wrap;">
+            <span id="modalPriceTag" style="font-size:1.8rem; font-weight:900; color:var(--green-dark);">₹99</span>
+            <button onclick="initiatePayment()" class="btn-gold" style="border:none; cursor:pointer; font-size:1rem; padding:12px 28px;">
+              💳 Pay & Unlock All Chapters
+            </button>
+          </div>
+        </div>
+
+        <!-- Chapter Playlist -->
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; border-bottom:1.5px solid var(--line); padding-bottom:8px;">
+          <h4 style="color:var(--green-dark); font-size:1.15rem; font-weight:800;">Course Curriculum & Chapters</h4>
+          <span id="statusTag" style="font-size:0.8rem; font-weight:800; color:var(--muted);">Select chapter to play</span>
+        </div>
+        <div id="chaptersList" style="display:grid; gap:10px;"></div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Standard Scripts (Reliable Vanilla JS for immediate UI action) -->
   <script>
-    // 1. Current Year
-    document.getElementById('currentYear').textContent = new Date().getFullYear();
+    // Mobile navigation toggle
+    document.getElementById('menuToggleBtn').onclick = function() {
+      document.getElementById('navMenu').classList.toggle('open');
+    };
 
-    // 2. Mobile Menu
-    const menuBtn = document.getElementById('menuToggleBtn');
-    const navMenu = document.getElementById('navMenu');
-    menuBtn.addEventListener('click', () => { navMenu.classList.toggle('open'); });
-    document.querySelectorAll('#navMenu a').forEach(link => {
-      link.addEventListener('click', () => navMenu.classList.remove('open'));
-    });
-
-    // 3. STUDENT CREDENTIALS DATABASE (Teacher can manage users here)
-    // Aap yahan jitne chahein naye students ke username aur password add kar sakte hain
-    const ENROLLED_STUDENTS = [
-      { username: 'student1', password: 'agri123', name: 'Ramesh Sharma' },
-      { username: 'student2', password: 'biopass99', name: 'Pooja Verma' },
-      { username: 'narendra', password: 'admin2026', name: 'Narendra Sir (Master)' }
-    ];
-
-    // 4. COURSE DATABASE FOR PAGE 2
-    const COURSES_DATABASE = {
-      'cbse11_agri': {
-        title: 'CBSE 11 AGRICULTURE',
-        category: 'CBSE Class 11',
-        subtitle: 'Agronomy • Soil Chemistry • Weather Basics',
-        desc: 'Comprehensive foundation course designed specifically for CBSE Class 11 Agriculture. Covers seed science, soil fertility, plant nutrition, and agricultural meteorology with real-world farm examples explained by Narendra Sir.',
-        price: '₹99',
-        demoVideoUrl: 'https://www.youtube.com/embed/ScMzIvxBSi4', // Replace with your Unlisted/Demo YouTube Video link
-        demoNotesUrl: 'https://wa.me/918764560007?text=Hello%20Narendra%20Sir,%20please%20send%20CBSE%2011%20Agri%20Demo%20Notes',
-        telegramChannelLink: 'https://t.me/+xViMeUngEJsyNmQ1', // Replace with your private Telegram channel link
-        themeColor: 'theme-agri'
+    // Course database with chapter lists & video links
+    window.A4_COURSES = {
+      "cbse11_agri": {
+        title: "CBSE 11 AGRICULTURE - Foundation Batch",
+        category: "CBSE CLASS 11",
+        price: 99,
+        pricePaise: 9900,
+        lessons: [
+          { title: "Chapter 1: Agronomy & Agro-Meteorology", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_1" },
+          { title: "Chapter 2: Soil Properties, Fertility & Manures", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_2" },
+          { title: "Chapter 3: Crop Production & Agronomic Practices", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_3" }
+        ]
       },
-      'cbse11_bio': {
-        title: 'CBSE 11 BIOLOGY',
-        category: 'CBSE Class 11',
-        subtitle: 'Cell Biology • Plant Physiology • Diversity in Living Organisms',
-        desc: 'Thorough coverage of CBSE Class 11 Biology NCERT. Narendra Sir provides step-by-step scientific illustrations, cellular mechanisms, and high-scoring diagram drafting techniques.',
-        price: '₹99',
-        demoVideoUrl: 'https://www.youtube.com/embed/ScMzIvxBSi4',
-        demoNotesUrl: 'https://wa.me/918764560007?text=Hello%20Narendra%20Sir,%20please%20send%20CBSE%2011%20Bio%20Demo%20Notes',
-        telegramChannelLink: 'https://t.me/+xViMeUngEJsyNmQ1',
-        themeColor: 'theme-bio'
+      "cbse11_bio": {
+        title: "CBSE 11 BIOLOGY - Conceptual Foundation",
+        category: "CBSE CLASS 11",
+        price: 99,
+        pricePaise: 9900,
+        lessons: [
+          { title: "Unit 1: Diversity in the Living World", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_4" },
+          { title: "Unit 2: Cell Structure and Function", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_5" },
+          { title: "Unit 3: Plant Physiology Deep Dive", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_6" }
+        ]
       },
-      'cbse11_combo': {
-        title: 'CBSE 11 AGRI + BIO COMBO',
-        category: 'CBSE Class 11 (Dual Batch)',
-        subtitle: 'Complete Academic Package for Class 11 Science & Agriculture',
-        desc: 'All-in-one package containing full syllabuses of both Agriculture and Biology. Includes continuous doubt clearing support and rapid revision modules for board exams.',
-        price: '₹169',
-        demoVideoUrl: 'https://www.youtube.com/embed/ScMzIvxBSi4',
-        demoNotesUrl: 'https://wa.me/918764560007?text=Hello%20Narendra%20Sir,%20please%20send%20CBSE%2011%20Combo%20Demo%20Notes',
-        telegramChannelLink: 'https://t.me/+xViMeUngEJsyNmQ1',
-        themeColor: 'theme-combo'
+      "cbse11_combo": {
+        title: "CBSE 11 AGRI + BIO COMBO - Dual Batch",
+        category: "CBSE CLASS 11 COMBO",
+        price: 169,
+        pricePaise: 16900,
+        lessons: [
+          { title: "Agri Chapter 1: Agronomy Fundamentals", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_1" },
+          { title: "Bio Unit 1: Diversity of Living Organisms", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_4" },
+          { title: "Agri Chapter 2: Soil Science Basics", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_2" },
+          { title: "Bio Unit 2: Plant Physiology", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_6" }
+        ]
       },
-      'cbse12_agri': {
-        title: 'CBSE 12 AGRICULTURE',
-        category: 'CBSE Class 12 Board',
-        subtitle: 'Commercial Horticulture • Crop Production • Post-Harvest Preservation',
-        desc: 'Target 95%+ marks in CBSE Class 12 Boards. In-depth analysis of commercial horticulture, fruit & vegetable preservation, and model answer framing.',
-        price: '₹99',
-        CHAPTER 1: 'https://www.youtube.com/embed/ScMzIvxBSi4',
-        demoNotesUrl: 'https://wa.me/918764560007?text=Hello%20Narendra%20Sir,%20please%20send%20CBSE%2012%20Agri%20Demo%20Notes',
-        telegramChannelLink: 'https://t.me/+xViMeUngEJsyNmQ1',
-        themeColor: 'theme-agri',
-        topics: { name: "unit 1"}
+      "cbse12_agri": {
+        title: "CBSE 12 AGRICULTURE - Board Target Batch",
+        category: "CBSE CLASS 12",
+        price: 99,
+        pricePaise: 9900,
+        lessons: [
+          { title: "Chapter 1: Advanced Crop Production Techniques", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_7" },
+          { title: "Chapter 2: Horticulture & Nursery Management", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_8" },
+          { title: "Chapter 3: Post Harvest Processing & Packaging", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_9" }
+        ]
       },
-      'cbse12_bio': {
-        title: 'CBSE 12 BIOLOGY',
-        category: 'CBSE Class 12 Board',
-        subtitle: 'Genetics • Biotechnology • Human Health • Ecosystems',
-        desc: 'Conquer complex genetics and biotechnology mechanisms. Detailed NCERT breakdown by Narendra Sir with handwritten mnemonics and diagram guides.',
-        price: '₹99',
-        demoVideoUrl: 'https://www.youtube.com/embed/ScMzIvxBSi4',
-        demoNotesUrl: 'https://wa.me/918764560007?text=Hello%20Narendra%20Sir,%20please%20send%20CBSE%2012%20Bio%20Demo%20Notes',
-        telegramChannelLink: 'https://t.me/+xViMeUngEJsyNmQ1',
-        themeColor: 'theme-bio'
+      "cbse12_bio": {
+        title: "CBSE 12 BIOLOGY - Master Batch",
+        category: "CBSE CLASS 12",
+        price: 99,
+        pricePaise: 9900,
+        lessons: [
+          { title: "Unit 1: Principles of Inheritance and Variation", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_10" },
+          { title: "Unit 2: Molecular Basis of Inheritance", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_11" },
+          { title: "Unit 3: Biotechnology and Its Applications", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_12" }
+        ]
       },
-      'cbse12_combo': {
-        title: 'CBSE 12 AGRI + BIO COMBO',
-        category: 'CBSE Class 12 Flagship',
-        subtitle: 'Complete Mastery for 12th Board Examination',
-        desc: 'Top-tier comprehensive mentorship for students aiming for 90%+ in both subjects. Includes full mock tests and direct voice support with Narendra Sir.',
-        price: '₹169',
-        demoVideoUrl: 'https://www.youtube.com/embed/ScMzIvxBSi4',
-        demoNotesUrl: 'https://wa.me/918764560007?text=Hello%20Narendra%20Sir,%20please%20send%20CBSE%2012%20Combo%20Demo%20Notes',
-        telegramChannelLink: 'https://t.me/+xViMeUngEJsyNmQ1',
-        themeColor: 'theme-combo'
+      "cbse12_combo": {
+        title: "CBSE 12 AGRI + BIO COMBO - Flagship Batch",
+        category: "CBSE CLASS 12 COMBO",
+        price: 169,
+        pricePaise: 16900,
+        lessons: [
+          { title: "Agri Chapter 1: Horticulture Principles", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_8" },
+          { title: "Bio Unit 1: Molecular Genetics", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_11" },
+          { title: "Agri Chapter 2: Post Harvest Tech", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_9" },
+          { title: "Bio Unit 2: Biotechnology", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_12" }
+        ]
       },
-      'rbse11_agri': {
-        title: 'RBSE 11 AGRICULTURE',
-        category: 'Rajasthan Board Class 11',
-        subtitle: 'Krishi Vigyan • Shasya Vigyan • Basic Crops',
-        desc: 'Strictly aligned to the RBSE curriculum in clear Hindi/Bilingual format. Includes chapter-end questions and model papers.',
-        price: '₹99',
-        demoVideoUrl: 'https://www.youtube.com/embed/ScMzIvxBSi4',
-        demoNotesUrl: 'https://wa.me/918764560007?text=Hello%20Narendra%20Sir,%20please%20send%20RBSE%2011%20Agri%20Demo%20Notes',
-        telegramChannelLink: 'https://t.me/+xViMeUngEJsyNmQ1',
-        themeColor: 'theme-agri'
+      "rbse11_agri": {
+        title: "RBSE 11 AGRICULTURE (कृषि विज्ञान)",
+        category: "RBSE CLASS 11",
+        price: 99,
+        pricePaise: 9900,
+        lessons: [
+          { title: "अध्याय 1: शस्य विज्ञान के सिद्धांत", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_13" },
+          { title: "अध्याय 2: मृदा विज्ञान एवं पोषक तत्व", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_14" }
+        ]
       },
-      'rbse11_bio': {
-        title: 'RBSE 11 BIOLOGY',
-        category: 'Rajasthan Board Class 11',
-        subtitle: 'Jeev Vigyan • Plant & Animal Kingdoms • Cellular Biology',
-        desc: 'Complete Jeev Vigyan coaching with point-to-point notes created specifically for RBSE students aiming for school and district merit.',
-        price: '₹99',
-        demoVideoUrl: 'https://www.youtube.com/embed/ScMzIvxBSi4',
-        demoNotesUrl: 'https://wa.me/918764560007?text=Hello%20Narendra%20Sir,%20please%20send%20RBSE%2011%20Bio%20Demo%20Notes',
-        telegramChannelLink: 'https://t.me/+xViMeUngEJsyNmQ1',
-        themeColor: 'theme-bio'
+      "rbse11_bio": {
+        title: "RBSE 11 BIOLOGY (जीव विज्ञान)",
+        category: "RBSE CLASS 11",
+        price: 99,
+        pricePaise: 9900,
+        lessons: [
+          { title: "अध्याय 1: जीव जगत का वर्गीकरण", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_15" },
+          { title: "अध्याय 2: कोशिका संरचना एवं कार्य", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_16" }
+        ]
       },
-      'rbse11_combo': {
-        title: 'RBSE 11 AGRI + BIO COMBO',
-        category: 'Rajasthan Board Combined',
-        subtitle: 'Krishi Vigyan + Jeev Vigyan Unified Program',
-        desc: 'Save more with this complete RBSE Class 11 bundle, ensuring thorough preparation across both primary science subjects.',
-        price: '₹169',
-        demoVideoUrl: 'https://www.youtube.com/embed/ScMzIvxBSi4',
-        demoNotesUrl: 'https://wa.me/918764560007?text=Hello%20Narendra%20Sir,%20please%20send%20RBSE%2011%20Combo%20Demo%20Notes',
-        telegramChannelLink: 'https://t.me/+xViMeUngEJsyNmQ1',
-        themeColor: 'theme-combo'
+      "rbse11_combo": {
+        title: "RBSE 11 AGRI + BIO COMBO",
+        category: "RBSE CLASS 11 COMBO",
+        price: 169,
+        pricePaise: 16900,
+        lessons: [
+          { title: "कृषि विज्ञान: शस्य विज्ञान सिद्धांत", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_13" },
+          { title: "जीव विज्ञान: कोशिका संरचना", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_16" }
+        ]
       },
-      'rbse12_agri': {
-        title: 'RBSE 12 AGRICULTURE',
-        category: 'RBSE 12 Merit Batch',
-        subtitle: 'Shasya Vigyan • Udyan Vigyan • Pashupalan Dugdh Vigyan',
-        desc: 'State-topper recommended batch covering all three core units of 12th Krishi Vigyan: Agronomy, Horticulture, and Animal Husbandry.',
-        price: '₹99',
-        demoVideoUrl: 'https://www.youtube.com/embed/ScMzIvxBSi4',
-        demoNotesUrl: 'https://wa.me/918764560007?text=Hello%20Narendra%20Sir,%20please%20send%20RBSE%2012%20Agri%20Demo%20Notes',
-        telegramChannelLink: 'https://t.me/+xViMeUngEJsyNmQ1',
-        themeColor: 'theme-agri'
+      "rbse12_agri": {
+        title: "RBSE 12 AGRICULTURE (कृषि विज्ञान - मेरिट बैच)",
+        category: "RBSE CLASS 12",
+        price: 99,
+        pricePaise: 9900,
+        lessons: [
+          { title: "खंड 1: शस्य विज्ञान (Agronomy)", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_17" },
+          { title: "खंड 2: उद्यान विज्ञान (Horticulture)", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_18" },
+          { title: "खंड 3: पशुपालन एवं दुग्ध विज्ञान", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_19" }
+        ]
       },
-      'rbse12_bio': {
-        title: 'RBSE 12 BIOLOGY',
-        category: 'RBSE 12 Merit Batch',
-        subtitle: 'Genetics • Plant Breeding • Biotechnology • Ecology',
-        desc: 'Target full marks with crystal-clear explanations and accurate board-standard diagram labeling by Narendra Sir.',
-        price: '₹99',
-        demoVideoUrl: 'https://www.youtube.com/embed/ScMzIvxBSi4',
-        demoNotesUrl: 'https://wa.me/918764560007?text=Hello%20Narendra%20Sir,%20please%20send%20RBSE%2012%20Bio%20Demo%20Notes',
-        telegramChannelLink: 'https://t.me/+xViMeUngEJsyNmQ1',
-        themeColor: 'theme-bio'                                                                                                                       
+      "rbse12_bio": {
+        title: "RBSE 12 BIOLOGY (जीव विज्ञान)",
+        category: "RBSE CLASS 12",
+        price: 99,
+        pricePaise: 9900,
+        lessons: [
+          { title: "अध्याय 1: पादप जनन एवं अनुवांशिकी", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_20" },
+          { title: "अध्याय 2: जैव प्रौद्योगिकी एवं उपयोग", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_21" }
+        ]
       },
-      'rbse12_combo': {
-        title: 'RBSE 12 AGRI + BIO COMBO',
-        category: 'RBSE 12 Flagship',
-        subtitle: 'Two Core Subjects Unified Curriculum',
-        desc: 'The best-value program for Rajasthan Board Class 12 aspirants. Includes regular testing and doubt clearing on WhatsApp.',
-        price: '₹169',
-        demoVideoUrl: 'https://www.youtube.com/embed/ScMzIvxBSi4',
-        demoNotesUrl: 'https://wa.me/918764560007?text=Hello%20Narendra%20Sir,%20please%20send%20RBSE%2012%20Combo%20Demo%20Notes',
-        telegramChannelLink: 'https://t.me/+xViMeUngEJsyNmQ1',
-        themeColor: 'theme-combo'
+      "rbse12_combo": {
+        title: "RBSE 12 AGRI + BIO COMBO (Toppers Batch)",
+        category: "RBSE CLASS 12 COMBO",
+        price: 169,
+        pricePaise: 16900,
+        lessons: [
+          { title: "कृषि विज्ञान: शस्य व उद्यान विज्ञान", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_17" },
+          { title: "जीव विज्ञान: अनुवांशिकी एवं जैव प्रौद्योगिकी", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_20" }
+        ]
       },
-      'supervisor': {
-        title: 'AGRICULTURE SUPERVISOR',
-        category: 'Recruitment Selection Batch',
-        subtitle: 'कृषि पर्यवेक्षक • Agronomy, Horticulture, Animal Husbandry & GK',
-        desc: 'Intensive competitive preparation specifically built for the Rajasthan Agriculture Supervisor exam. Includes high-frequency practice sets.',
-        price: '₹499',
-        demoVideoUrl: 'https://www.youtube.com/embed/ScMzIvxBSi4',
-        demoNotesUrl: 'https://wa.me/918764560007?text=Hello%20Narendra%20Sir,%20please%20send%20Supervisor%20Demo%20Notes',
-        telegramChannelLink: 'https://t.me/+SamplePrivateLinkGovt1',
-        themeColor: 'theme-agri'
+      "agri_supervisor": {
+        title: "AGRICULTURE SUPERVISOR (कृषि पर्यवेक्षक चयन बैच)",
+        category: "GOVT SELECTION",
+        price: 499,
+        pricePaise: 49900,
+        lessons: [
+          { title: "Lecture 1: शस्य विज्ञान एवं बीज तकनीक (Agronomy)", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_22" },
+          { title: "Lecture 2: उद्यानिकी एवं फल परिरक्षण", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_23" },
+          { title: "Lecture 3: राजस्थान भूगोल एवं कला संस्कृति GK", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_24" }
+        ]
       },
-      'fso': {
-        title: 'FOOD SAFETY OFFICER (FSO)',
-        category: 'Officer Cadre Batch',
-        subtitle: 'Food Chemistry • Microbiology • Preservation • Food Safety Standards',
-        desc: 'Specialized officer-level curriculum designed for candidates appearing for FSO recruitment examinations.',
-        price: '₹899',
-        demoVideoUrl: 'https://www.youtube.com/embed/ScMzIvxBSi4',
-        demoNotesUrl: 'https://wa.me/918764560007?text=Hello%20Narendra%20Sir,%20please%20send%20FSO%20Demo%20Notes',
-        telegramChannelLink: 'https://t.me/+SamplePrivateLinkGovt2',
-        themeColor: 'theme-officer'
+      "fso_officer": {
+        title: "FOOD SAFETY OFFICER (FSO Cadre Batch)",
+        category: "OFFICER EXAM",
+        price: 899,
+        pricePaise: 89900,
+        lessons: [
+          { title: "Lecture 1: Food Chemistry, Additives & Nutrition", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_25" },
+          { title: "Lecture 2: Food Microbiology & Quality Standards", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_26" }
+        ]
       },
-      'ao_aao': {
-        title: 'AO & AAO MASTER BATCH',
-        category: 'Gazetted & Class II Cadre',
-        subtitle: 'Advanced Agronomy • Plant Breeding • Entomology • Extension',
-        desc: 'Exhaustive advanced agriculture science for Agriculture Officer and Assistant Agriculture Officer selections.',
-        price: '₹999',
-        demoVideoUrl: 'https://www.youtube.com/embed/ScMzIvxBSi4',
-        demoNotesUrl: 'https://wa.me/918764560007?text=Hello%20Narendra%20Sir,%20please%20send%20AO%20AAO%20Demo%20Notes',
-        telegramChannelLink: 'https://t.me/+SamplePrivateLinkGovt3',
-        themeColor: 'theme-officer'
+      "ao_aao_master": {
+        title: "AO & AAO MASTER OFFICER BATCH",
+        category: "GAZETTED OFFICER",
+        price: 999,
+        pricePaise: 99900,
+        lessons: [
+          { title: "Module 1: Advanced Plant Breeding & Seed Science", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_27" },
+          { title: "Module 2: Plant Pathology & Entomology Integrated Management", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_28" }
+        ]
       }
     };
 
-    let currentSelectedCourseKey = null;
+    // Global state
+    window.userPurchasedCourses = JSON.parse(localStorage.getItem('a4_unlocked_courses') || '[]');
+    window.currentActiveCourseId = null;
 
-    // 5. VIEW NAVIGATION (PAGE 1 <-> PAGE 2)
-    function openCourseDetails(courseKey) {
-      const data = COURSES_DATABASE[courseKey];
-      if (!data) return;
-
-      currentSelectedCourseKey = courseKey;
-
-      // Fill in details on Page 2
-      document.getElementById('detailTitle').textContent = data.title;
-      document.getElementById('detailCatChip').textContent = data.category;
-      document.getElementById('detailSubTitle').textContent = data.subtitle;
-      document.getElementById('detailLongDesc').textContent = data.desc;
-      document.getElementById('detailPriceFinal').textContent = data.price;
-      document.getElementById('demoVideoIframe').src = data.demoVideoUrl;
-      document.getElementById('demoNotesBtn').href = data.demoNotesUrl;
-
-      // WhatsApp enrollment button for this specific course
-      document.getElementById('detailWhatsAppEnrollBtn').href = 
-        `https://wa.me/918764560007?text=Hello%20Narendra%20Sir,%20I%20want%20to%20enroll%20in%20*${encodeURIComponent(data.title)}*%20(${data.price})`;
-
-      // Update theme gradient
-      const banner = document.getElementById('detailBannerBox');
-      if (data.themeColor === 'theme-bio') {
-        banner.style.background = 'linear-gradient(135deg, #013763 0%, #0277bd 60%, #03a9f4 100%)';
-      } else if (data.themeColor === 'theme-combo') {
-        banner.style.background = 'linear-gradient(135deg, #0f3d1b 0%, #0288d1 60%, #f57f17 100%)';
-      } else if (data.themeColor === 'theme-officer') {
-        banner.style.background = 'linear-gradient(135deg, #0d2137 0%, #153e2a 100%)';
-      } else {
-        banner.style.background = 'linear-gradient(135deg, #0e3518 0%, #1d5f2c 60%, #2e7d32 100%)';
+    // Open course portal (Works immediately on click!)
+    window.openCoursePortal = function(courseId) {
+      window.currentActiveCourseId = courseId;
+      renderCourseModal(courseId);
+      var modal = document.getElementById("courseModal");
+      if (modal) {
+        modal.style.display = "block";
       }
+    };
 
-      // Check current login state to unlock or lock content
-      refreshAccessUI();
-
-      // Switch views
-      document.getElementById('mainHomeView').style.display = 'none';
-      document.getElementById('quickJumpStrip').style.display = 'none';
-      document.getElementById('courseDetailsView').style.display = 'block';
-
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    function goToHomeView() {
-      document.getElementById('courseDetailsView').style.display = 'none';
-      document.getElementById('mainHomeView').style.display = 'block';
-      document.getElementById('quickJumpStrip').style.display = 'block';
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    // 6. STUDENT LOGIN & DEVICE/SESSION RESTRICTION
-    function getLoggedInUser() {
-      const user = localStorage.getItem('a4_student_session');
-      return user ? JSON.parse(user) : null;
-    }
-
-    function refreshAccessUI() {
-      const activeUser = getLoggedInUser();
-      const authNav = document.getElementById('authNavContainer');
-
-      // Update Nav Bar
-      if (activeUser) {
-        authNav.innerHTML = `
-          <div class="user-pill">
-            <span>👤 <b>${activeUser.name}</b></span>
-            <button class="logout-btn" onclick="logoutStudent()">Logout</button>
-          </div>
-        `;
-      } else {
-        authNav.innerHTML = `
-          <button class="nav-login-btn" onclick="openLoginModal()">
-            🔒 Student Login
-          </button>
-        `;
+    // Close portal
+    window.closeCoursePortal = function() {
+      var modal = document.getElementById("courseModal");
+      if (modal) {
+        modal.style.display = "none";
       }
+      var iframe = document.getElementById("mainEmbedFrame");
+      if (iframe) {
+        iframe.src = "";
+      }
+      window.currentActiveCourseId = null;
+    };
 
-      // Update Course Details Page 2 Locks
-      const lockPill = document.getElementById('lockStatusPill');
-      const badges = document.querySelectorAll('.module-access-badge');
-      const tgBoxText = document.getElementById('tgBoxText');
-      const tgActionContainer = document.getElementById('tgActionContainer');
+    // Render course contents
+    function renderCourseModal(courseId) {
+      var course = window.A4_COURSES[courseId];
+      if (!course) return;
 
-      if (activeUser) {
-        // UNLOCKED STATE
-        if (lockPill) {
-          lockPill.className = 'lock-status-badge badge-unlocked';
-          lockPill.textContent = 'ACCESS GRANTED (VERIFIED STUDENT)';
-        }
-        badges.forEach(b => {
-          b.className = 'module-access-badge lock-status-badge badge-unlocked';
-          b.textContent = 'Unlocked ✔';
+      document.getElementById("modalCategoryTag").innerText = course.category;
+      document.getElementById("modalCourseTitle").innerText = course.title;
+      document.getElementById("modalPriceTag").innerText = "₹" + course.price;
+
+      var isPurchased = window.userPurchasedCourses.indexOf(courseId) !== -1;
+      var videoBox = document.getElementById("videoPlayerBox");
+      var lockBox = document.getElementById("lockNoticeBox");
+      var listDiv = document.getElementById("chaptersList");
+      var statusTag = document.getElementById("statusTag");
+
+      listDiv.innerHTML = "";
+
+      if (isPurchased) {
+        lockBox.style.display = "none";
+        videoBox.style.display = "block";
+        statusTag.innerHTML = "<span style='color:#2e7d32;'>● COURSE UNLOCKED</span>";
+
+        loadLecture(course.lessons[0].title, course.lessons[0].videoUrl);
+
+        course.lessons.forEach(function(lesson, index) {
+          var item = document.createElement("div");
+          item.style.cssText = "padding:14px; border:1.5px solid #c8e6c9; background:#f1f8e9; border-radius:10px; display:flex; justify-content:space-between; align-items:center; cursor:pointer; font-weight:700;";
+          item.innerHTML = "<span><b>" + (index+1) + ".</b> " + lesson.title + "</span> <span style='color:#2e7d32; font-size:0.9rem;'>▶ Play Now</span>";
+          item.onclick = function() {
+            loadLecture(lesson.title, lesson.videoUrl);
+          };
+          listDiv.appendChild(item);
         });
 
-        const activeCourse = COURSES_DATABASE[currentSelectedCourseKey];
-        const tgLink = activeCourse ? activeCourse.telegramChannelLink : 'https://t.me/+SamplePrivateLink';
-
-        if (tgBoxText) {
-          tgBoxText.innerHTML = `Welcome <b>${activeUser.name}</b>! Your device is verified. Click below to stream all full-length lecture videos and private class discussions.`;
-        }
-        if (tgActionContainer) {
-          tgActionContainer.innerHTML = `
-            <a href="${tgLink}" target="_blank" class="tg-join-btn">
-              ▶ Open Private Telegram Channel / Video Stream
-            </a>
-          `;
-        }
       } else {
-        // LOCKED STATE
-        if (lockPill) {
-          lockPill.className = 'lock-status-badge badge-locked';
-          lockPill.textContent = 'ACCESS RESTRICTED';
-        }
-        badges.forEach(b => {
-          b.className = 'module-access-badge lock-status-badge badge-locked';
-          b.textContent = 'Locked 🔒';
+        lockBox.style.display = "block";
+        videoBox.style.display = "none";
+        statusTag.innerHTML = "<span style='color:#c62828;'>🔒 LOCKED</span>";
+
+        course.lessons.forEach(function(lesson, index) {
+          var item = document.createElement("div");
+          item.style.cssText = "padding:14px; border:1.5px solid #eee; background:#fafafa; border-radius:10px; display:flex; justify-content:space-between; align-items:center; color:#888;";
+          item.innerHTML = "<span><b>" + (index+1) + ".</b> " + lesson.title + "</span> <span style='font-size:0.85rem; font-weight:700;'>🔒 Locked</span>";
+          listDiv.appendChild(item);
         });
-        if (tgBoxText) {
-          tgBoxText.textContent = 'Please login with your provided Student ID and Password to unlock private lecture videos directly on our secured channel.';
-        }
-        if (tgActionContainer) {
-          tgActionContainer.innerHTML = `
-            <button class="btn-gold" onclick="openLoginModal()" style="border:none;">
-              🔑 Click Here to Student Login
-            </button>
-          `;
-        }
       }
     }
 
-    // Modal controls
-    const loginModal = document.getElementById('loginModal');
-    function openLoginModal() {
-      loginModal.style.display = 'flex';
-      document.getElementById('loginErrorAlert').style.display = 'none';
-      document.getElementById('loginSuccessAlert').style.display = 'none';
+    function loadLecture(title, url) {
+      document.getElementById("activeLessonName").innerText = "▶ " + title;
+      document.getElementById("mainEmbedFrame").src = url;
     }
-
-    document.getElementById('closeLoginBtn').addEventListener('click', () => {
-      loginModal.style.display = 'none';
-    });
-
-    document.getElementById('openLoginBtn')?.addEventListener('click', openLoginModal);
-
-    // Login Form Submit
-    document.getElementById('studentLoginForm').addEventListener('submit', (e) => {
-      e.preventDefault();
-      const userVal = document.getElementById('studentUsername').value.trim();
-      const passVal = document.getElementById('studentPassword').value.trim();
-      const errBox = document.getElementById('loginErrorAlert');
-      const succBox = document.getElementById('loginSuccessAlert');
-
-      // Check credentials from our manual database
-      const foundStudent = ENROLLED_STUDENTS.find(s => s.username === userVal && s.password === passVal);
-
-      if (foundStudent) {
-        // Simple Device/Session tracker
-        const sessionPayload = {
-          username: foundStudent.username,
-          name: foundStudent.name,
-          loginTime: new Date().toISOString(),
-          deviceFingerprint: navigator.userAgent.substring(0, 35)
-        };
-
-        localStorage.setItem('a4_student_session', JSON.stringify(sessionPayload));
-
-        errBox.style.display = 'none';
-        succBox.textContent = `Welcome back, ${foundStudent.name}! Unlocking your course content...`;
-        succBox.style.display = 'block';
-
-        setTimeout(() => {
-          loginModal.style.display = 'none';
-          refreshAccessUI();
-        }, 900);
-
-      } else {
-        succBox.style.display = 'none';
-        errBox.textContent = 'Invalid ID or Password! Please check the credentials Narendra Sir shared with you.';
-        errBox.style.display = 'block';
-      }
-    });
-
-    function logoutStudent() {
-      localStorage.removeItem('a4_student_session');
-      refreshAccessUI();
-      alert('You have successfully logged out.');
-    }
-
-    // 7. General WhatsApp Contact Form
-    document.getElementById('contactForm').addEventListener('submit', (e) => {
-      e.preventDefault();
-      const name = document.getElementById('nameInput').value.trim();
-      const phone = document.getElementById('phoneInput').value.trim();
-      const course = document.getElementById('courseSelect').value;
-      const query = document.getElementById('queryInput').value.trim() || 'No additional note';
-
-      const msg = `Hello Narendra Sir (A4 AGRICULTURE),%0A%0AStudent Name: *${encodeURIComponent(name)}*%0APhone: *${encodeURIComponent(phone)}*%0ACourse Selected: *${encodeURIComponent(course)}*%0ANote: ${encodeURIComponent(query)}%0A%0APlease share batch admission details.`;
-
-      window.open(`https://wa.me/918764560007?text=${msg}`, '_blank');
-    });
-
-    // Initialize UI on load
-    refreshAccessUI();
   </script>
+
+  <!-- Razorpay Checkout Script -->
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+  <!-- Firebase & Payment Handler Script -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    // Firebase configuration 
+    const firebaseConfig = {
+      apiKey: "AIzaSyB8CI56UM_ZdhNgj5scFVOzZaNAsUcVNJs",
+      authDomain: "a4-agriculture.firebaseapp.com",
+      projectId: "a4-agriculture",
+      storageBucket: "a4-agriculture.firebasestorage.app",
+      messagingSenderId: "258566424969",
+      appId: "1:258566424969:web:6004dca25b474d7f9c3958"
+    };
+
+    let auth, db, provider;
+    try {
+      const app = initializeApp(firebaseConfig);
+      auth = getAuth(app);
+      db = getFirestore(app);
+      provider = new GoogleAuthProvider();
+
+      onAuthStateChanged(auth, async (user) => {
+        if (user) {
+          window.currentFirebaseUser = user;
+          const firstName = user.displayName ? user.displayName.split(' ')[0] : "Student";
+          document.getElementById("navLoginBtn").innerText = `✓ ${firstName}`;
+          
+          try {
+            const userRef = doc(db, "users", user.uid);
+            const userDoc = await getDoc(userRef);
+            if (userDoc.exists() && userDoc.data().courses) {
+              window.userPurchasedCourses = userDoc.data().courses;
+              localStorage.setItem('a4_unlocked_courses', JSON.stringify(window.userPurchasedCourses));
+            }
+          } catch (e) {
+            console.log("Database sync offline/test mode");
+          }
+        } else {
+          window.currentFirebaseUser = null;
+          document.getElementById("navLoginBtn").innerText = "👤 Student Login";
+        }
+        if (window.currentActiveCourseId) {
+          window.openCoursePortal(window.currentActiveCourseId);
+        }
+      });
+    } catch(err) {
+      console.log("Firebase initialized in local fallback mode");
+    }
+
+    window.handleAuthClick = async function() {
+      if (window.currentFirebaseUser && auth) {
+        if (confirm(`Aap ${window.currentFirebaseUser.email} se login hain. Logout karna chahte hain?`)) {
+          await signOut(auth);
+          window.userPurchasedCourses = [];
+          localStorage.removeItem('a4_unlocked_courses');
+          location.reload();
+        }
+      } else if (auth && provider) {
+        try {
+          await signInWithPopup(auth, provider);
+        } catch (err) {
+          alert("Login window closed ya configuration check karein: " + err.message);
+        }
+      } else {
+        alert("Firebase keys add hone ke baad Google login active hoga. Demo mode me payment testing direct chal sakti hai.");
+      }
+    };
+
+    window.initiatePayment = async function() {
+      const courseId = window.currentActiveCourseId;
+      const course = window.A4_COURSES[courseId];
+      if (!course) return;
+
+      const razorpayKey = "rzp_live_TxmWAx0ocMWHzb";
+
+      const options = {
+        "key": razorpayKey,
+        "amount": course.pricePaise,
+        "currency": "INR",
+        "name": "A4 AGRICULTURE",
+        "description": course.title,
+        "handler": async function (response) {
+          if (window.userPurchasedCourses.indexOf(courseId) === -1) {
+            window.userPurchasedCourses.push(courseId);
+            localStorage.setItem('a4_unlocked_courses', JSON.stringify(window.userPurchasedCourses));
+          }
+
+          if (window.currentFirebaseUser && db) {
+            try {
+              await setDoc(doc(db, "users", window.currentFirebaseUser.uid), {
+                email: window.currentFirebaseUser.email,
+                displayName: window.currentFirebaseUser.displayName,
+                courses: window.userPurchasedCourses,
+                lastPaymentId: response.razorpay_payment_id
+              }, { merge: true });
+            } catch(e) {}
+          }
+
+          alert("🎉 Payment safal rahi! Course unlock ho gaya.");
+          window.openCoursePortal(courseId);
+        },
+        "prefill": {
+          "name": window.currentFirebaseUser ? window.currentFirebaseUser.displayName : "Student",
+          "email": window.currentFirebaseUser ? window.currentFirebaseUser.email : "student@example.com"
+        },
+        "theme": { "color": "#123d1d" }
+      };
+
+      const rzp = new Razorpay(options);
+      rzp.open();
+    };
+  </script>
+
 </body>
 </html>
+"""
+
+with open("index-v3.html", "w", encoding="utf-8") as f:
+    f.write(html_code)
+
+print("Fresh file created: index-v3.html")
