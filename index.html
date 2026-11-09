@@ -880,6 +880,11 @@
           <li><a href="#competitive">Supervisor & Officer</a></li>
           <li><a href="#podcast">Podcast</a></li>
           <li><a href="#mentor">Narendra Sir</a></li>
+          <li id="myCoursesNav" style="display:none;">
+            <button onclick="openMyCoursesModal()" class="nav-pill-btn" style="background:var(--green-leaf); color:#fff !important; border:none; cursor:pointer; font-weight:800;">
+              📚 My Courses
+            </button>
+          </li>
           <li id="userAuthNav">
             <button id="navLoginBtn" onclick="handleAuthClick()" class="nav-pill-btn" style="background:var(--gold); color:#0c2612 !important; border:none; cursor:pointer; font-weight:800;">
               👤 Student Login
@@ -1649,6 +1654,25 @@
     </div>
   </footer>
 
+  
+  <!-- ================= MY COURSES / MY ORDERS MODAL ================= -->
+  <div id="myCoursesModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:99999; backdrop-filter:blur(5px); overflow-y:auto; padding:20px;">
+    <div style="max-width:700px; margin:40px auto; background:#fff; border-radius:16px; overflow:hidden; box-shadow:0 10px 40px rgba(0,0,0,0.5); border:2px solid var(--green-mid);">
+      <div style="background:var(--green-dark); color:#fff; padding:18px 24px; display:flex; justify-content:space-between; align-items:center;">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span style="font-size:1.4rem;">📚</span>
+          <h3 style="margin:0; font-size:1.3rem; font-weight:900;">My Courses & Purchased Batches</h3>
+        </div>
+        <button onclick="closeMyCoursesModal()" style="background:none; border:none; color:#fff; font-size:2rem; cursor:pointer; line-height:1;">&times;</button>
+      </div>
+      <div style="padding:24px;">
+        <div id="myCoursesList" style="display:grid; gap:14px;">
+          <!-- Injected via JS -->
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- ================= COURSE PLAYER & CHECKOUT POPUP MODAL ================= -->
   <div id="courseModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:99999; backdrop-filter:blur(5px); overflow-y:auto; padding:20px;">
     <div style="max-width:940px; margin:30px auto; background:#fff; border-radius:16px; overflow:hidden; box-shadow:0 10px 40px rgba(0,0,0,0.5); border:2px solid var(--gold);">
@@ -1677,7 +1701,7 @@
         <div id="lockNoticeBox" style="background:#fff3cd; border:1.5px solid #ffeeba; border-radius:12px; padding:24px; text-align:center; margin-bottom:24px;">
           <h3 style="color:#856404; margin-bottom:8px; font-size:1.3rem;">🔒 Course Content Locked</h3>
           <p style="color:#666; font-size:0.98rem; margin-bottom:16px;">
-            Full conceptual recorded classes, handwritten PDF notes aur test series unlock karne ke liye course join karein.
+            Enroll now to unlock full conceptual recorded lectures, handwritten PDF notes, and test series.
           </p>
           <div style="display:flex; justify-content:center; align-items:center; gap:16px; flex-wrap:wrap;">
             <span id="modalPriceTag" style="font-size:1.8rem; font-weight:900; color:var(--green-dark);">₹99</span>
@@ -1869,6 +1893,85 @@
       }
     };
 
+    
+    // Update all Course Card Buttons across the page based on purchased status
+    window.updatePurchasedCourseUI = function() {
+      var buttons = document.querySelectorAll('button[onclick*="openCoursePortal"]');
+      buttons.forEach(function(btn) {
+        var match = btn.getAttribute('onclick').match(/openCoursePortal\(['"]([^'"]+)['"]\)/);
+        if (match && match[1]) {
+          var cId = match[1];
+          if (window.userPurchasedCourses && window.userPurchasedCourses.indexOf(cId) !== -1) {
+            btn.innerHTML = "▶ Watch Now (Unlocked)";
+            btn.style.background = "#2e7d32";
+            btn.style.color = "#ffffff";
+            btn.style.boxShadow = "0 4px 14px rgba(46, 125, 50, 0.35)";
+          } else {
+            btn.innerHTML = "💳 Buy Now";
+            btn.style.background = "var(--gold)";
+            btn.style.color = "#0c2612";
+            btn.style.boxShadow = "0 4px 14px rgba(251, 192, 45, 0.3)";
+          }
+        }
+      });
+
+      // Update My Courses Nav button visibility
+      var myNav = document.getElementById("myCoursesNav");
+      if (myNav) {
+        myNav.style.display = window.currentFirebaseUser ? "block" : "none";
+      }
+    };
+
+    // My Courses Modal functions
+    window.openMyCoursesModal = function() {
+      var modal = document.getElementById("myCoursesModal");
+      var list = document.getElementById("myCoursesList");
+      if (!list || !modal) return;
+      list.innerHTML = "";
+
+      var purchased = window.userPurchasedCourses || [];
+      if (purchased.length === 0) {
+        list.innerHTML = `
+          <div style="text-align:center; padding:30px 10px;">
+            <div style="font-size:3rem; margin-bottom:10px;">🎒</div>
+            <h4 style="font-size:1.2rem; color:var(--green-dark); margin-bottom:6px;">No Active Courses Found</h4>
+            <p style="color:var(--muted); font-size:0.95rem; margin-bottom:18px;">You haven't enrolled in any courses yet. Browse our batches and click 'Buy Now' to get started!</p>
+            <button onclick="closeMyCoursesModal()" class="btn-gold" style="border:none; cursor:pointer;">Explore Courses</button>
+          </div>
+        `;
+      } else {
+        purchased.forEach(function(courseId) {
+          var c = window.A4_COURSES[courseId];
+          if (c) {
+            var item = document.createElement("div");
+            item.style.cssText = "padding:16px; border:1.5px solid #c8e6c9; background:#f1f8e9; border-radius:12px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;";
+            item.innerHTML = `
+              <div>
+                <span style="font-size:0.75rem; background:#2e7d32; color:#fff; padding:2px 8px; border-radius:4px; font-weight:800;">${c.category}</span>
+                <h4 style="color:var(--green-dark); margin-top:4px; font-size:1.05rem; font-weight:800;">${c.title}</h4>
+                <span style="color:#2e7d32; font-size:0.85rem; font-weight:700;">✓ Lifetime Access Active</span>
+              </div>
+              <button onclick="closeMyCoursesModal(); openCoursePortal('${courseId}');" class="btn-gold" style="background:#2e7d32; color:#fff; border:none; padding:10px 20px; font-size:0.9rem; cursor:pointer;">
+                ▶ Open Course
+              </button>
+            `;
+            list.appendChild(item);
+          }
+        });
+      }
+      modal.style.display = "block";
+    };
+
+    window.closeMyCoursesModal = function() {
+      var modal = document.getElementById("myCoursesModal");
+      if (modal) modal.style.display = "none";
+    };
+
+    // Run on initial load
+    document.addEventListener("DOMContentLoaded", function() {
+      window.updatePurchasedCourseUI();
+    });
+
     // Global state
     window.userPurchasedCourses = JSON.parse(localStorage.getItem('a4_unlocked_courses') || '[]');
     window.currentActiveCourseId = null;
@@ -1999,7 +2102,7 @@
 
         // Check if account is bound to another device
         if (userData.registeredDeviceId && userData.registeredDeviceId !== thisDeviceId) {
-          alert("❌ Login Asafal!\\n\\nYe account pehle se kisi dusre phone/device par bind hai.\\nEk account sirf ek hi phone me chala sakte hain.\\n\\nAgar aapne naya phone liya hai toh A4 Agriculture helpline se device reset karwayein.");
+          alert("❌ Device Limit Reached!\n\nThis account is already registered on another device.\nOnly one active device is allowed per account.\n\nIf you changed your device, please contact A4 Agriculture Support (+91 8764560007) for a device reset.");
           await signOut(auth);
           window.currentFirebaseUser = null;
           window.userPurchasedCourses = [];
@@ -2054,6 +2157,10 @@
           document.getElementById("navLoginBtn").innerText = "👤 Student Login";
         }
 
+        if (typeof window.updatePurchasedCourseUI === "function") {
+          window.updatePurchasedCourseUI();
+        }
+
         if (window.currentActiveCourseId) {
           window.openCoursePortal(window.currentActiveCourseId);
         }
@@ -2065,7 +2172,7 @@
     // Top Student Login button click
     window.handleAuthClick = async function() {
       if (window.currentFirebaseUser && auth) {
-        if (confirm(`Aap ${window.currentFirebaseUser.email} se login hain. Logout karna chahte hain?`)) {
+        if (confirm(`You are currently logged in as ${window.currentFirebaseUser.email}. Would you like to log out?`)) {
           await signOut(auth);
           window.userPurchasedCourses = [];
           localStorage.removeItem('a4_unlocked_courses');
@@ -2077,10 +2184,10 @@
           await handleUserLoginSession(result.user);
         } catch (err) {
           console.error("Login Error:", err);
-          alert("Login window band hui ya cancel ho gayi: " + err.message);
+          alert("Login window was closed or cancelled: " + err.message);
         }
       } else {
-        alert("Firebase system load ho raha hai, kripya 2 second baad prayas karein.");
+        alert("Authentication service is initializing. Please try again in a few moments.");
       }
     };
 
@@ -2094,7 +2201,7 @@
       if (!window.currentFirebaseUser) {
         try {
           if (!auth || !provider) {
-            alert("Authentication system abhi initialize ho raha hai. Page refresh karein.");
+            alert("Authentication system is initializing. Please refresh the page and try again.");
             return;
           }
           const result = await signInWithPopup(auth, provider);
@@ -2102,7 +2209,7 @@
           if (!isAllowed) return;
         } catch (error) {
           console.error("Payment Login Error:", error);
-          alert("Course unlock karne ke liye pehle Google Login zaroori hai.");
+          alert("⚠️ Please sign in with your Google account to unlock this course.");
           return;
         }
       }
@@ -2143,7 +2250,10 @@
             }
           }
 
-          alert("🎉 Payment safal rahi! Course unlock ho gaya.");
+          if (typeof window.updatePurchasedCourseUI === "function") {
+            window.updatePurchasedCourseUI();
+          }
+          alert("🎉 Payment Successful! All course chapters have been unlocked.");
           window.openCoursePortal(courseId);
         },
         "theme": { "color": "#123d1d" }
@@ -2151,7 +2261,7 @@
 
       const rzp = new Razorpay(options);
       rzp.on('payment.failed', function (resp) {
-        alert("Payment fail ho gayi: " + (resp.error.description || "Dobara prayas karein"));
+        alert("Payment failed: " + (resp.error.description || "Please try again."));
       });
       rzp.open();
     };
