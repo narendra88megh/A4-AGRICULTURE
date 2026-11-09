@@ -853,6 +853,8 @@
       .menu-toggle { display: block; }
     }
   </style>
+  <!-- Mozilla PDF.js Viewer Library (Secure View-Only Reader) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 </head>
 <body>
 
@@ -1734,6 +1736,42 @@
     </div>
   </div>
 
+  <!-- ================= SECURE VIEW-ONLY PDF READER MODAL ================= -->
+  <div id="pdfModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.92); z-index:999999; backdrop-filter:blur(6px); overflow-y:auto; padding:15px;" oncontextmenu="return false;">
+    <div style="max-width:880px; margin:20px auto; background:#ffffff; border-radius:14px; overflow:hidden; box-shadow:0 10px 40px rgba(0,0,0,0.6); border:2px solid var(--gold);">
+      
+      <!-- Top Bar with Page Controls & Security Notice -->
+      <div style="background:var(--green-dark); color:#ffffff; padding:12px 20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; border-bottom:2px solid var(--gold);">
+        <div>
+          <h4 id="pdfTitleDisplay" style="margin:0; font-size:1.1rem; font-weight:900;">Study Notes</h4>
+          <span style="font-size:0.75rem; color:#dceada; display:inline-flex; align-items:center; gap:4px;">🔒 Secure View-Only Reader (Download/Print Disabled)</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <button onclick="prevPdfPage()" style="background:var(--gold); color:#0c2612; border:none; padding:6px 12px; border-radius:6px; font-weight:800; cursor:pointer; font-size:0.85rem;">◀ Prev</button>
+          <span style="font-size:0.85rem; font-weight:800; background:rgba(255,255,255,0.15); padding:4px 10px; border-radius:6px;">Page <span id="pdfCurrentPage">1</span> / <span id="pdfTotalPages">--</span></span>
+          <button onclick="nextPdfPage()" style="background:var(--gold); color:#0c2612; border:none; padding:6px 12px; border-radius:6px; font-weight:800; cursor:pointer; font-size:0.85rem;">Next ▶</button>
+          <button onclick="closePdfModal()" style="background:none; border:none; color:#ffffff; font-size:2rem; cursor:pointer; line-height:1; margin-left:8px;" title="Close Notes">&times;</button>
+        </div>
+      </div>
+
+      <!-- Loading Spinner / Status -->
+      <div id="pdfLoadingStatus" style="display:none; padding:20px; text-align:center; background:#f4f7f4; color:var(--green-dark); font-weight:700;">
+        ⏳ Loading notes securely... Please wait.
+      </div>
+
+      <!-- PDF Canvas Render Area (Anti-Copy / Anti-Drag) -->
+      <div id="pdfCanvasContainer" style="padding:15px; background:#2c3437; display:flex; justify-content:center; overflow-x:auto; user-select:none; -webkit-user-select:none;">
+        <canvas id="pdfRenderCanvas" style="box-shadow:0 6px 20px rgba(0,0,0,0.35); border-radius:6px; background:#fff; max-width:100%; height:auto; display:block;"></canvas>
+      </div>
+
+      <!-- Bottom Hint -->
+      <div style="background:#f4f7f4; padding:8px 16px; text-align:center; font-size:0.8rem; color:#555; border-top:1px solid #ddd;">
+        💡 <b>Tip:</b> Click <b>Next ▶</b> or <b>◀ Prev</b> to turn pages. Right-click & downloading are restricted for content protection.
+      </div>
+
+    </div>
+  </div>
+
   <!-- Standard Scripts (Reliable Vanilla JS for immediate UI action) -->
   <script>
     // Mobile navigation toggle
@@ -1748,11 +1786,11 @@
         category: "CBSE CLASS 11",
         price: 99,
         pricePaise: 9900,
-        thumbnail: "./ACB11.png",
+        thumbnail: "./cbse11_thumb.jpg",
         lessons: [
-          { title: "Chapter 1: Agronomy & Agro-Meteorology", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_1" },
-          { title: "Chapter 2: Soil Properties, Fertility & Manures", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_2" },
-          { title: "Chapter 3: Crop Production & Agronomic Practices", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_3" }
+          { title: "Chapter 1: Agronomy & Agro-Meteorology", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_1", notesUrl: "./notes/cbse11_agri_ch1.pdf" },
+          { title: "Chapter 2: Soil Properties, Fertility & Manures", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_2", notesUrl: "./notes/cbse11_agri_ch2.pdf" },
+          { title: "Chapter 3: Crop Production & Agronomic Practices", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_3", notesUrl: "./notes/cbse11_agri_ch3.pdf" }
         ]
       },
       "cbse11_bio": {
@@ -1760,11 +1798,11 @@
         category: "CBSE CLASS 11",
         price: 99,
         pricePaise: 9900,
-        thumbnail: "./CB11.png",
+        thumbnail: "./cbse11_bio_thumb.jpg",
         lessons: [
-          { title: "Unit 1: Diversity in the Living World", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_4" },
-          { title: "Unit 2: Cell Structure and Function", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_5" },
-          { title: "Unit 3: Plant Physiology Deep Dive", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_6" }
+          { title: "Unit 1: Diversity in the Living World", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_4", notesUrl: "./notes/cbse11_bio_ch1.pdf" },
+          { title: "Unit 2: Cell Structure and Function", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_5", notesUrl: "./notes/cbse11_bio_ch2.pdf" },
+          { title: "Unit 3: Plant Physiology Deep Dive", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_6", notesUrl: "./notes/cbse11_bio_ch3.pdf" }
         ]
       },
       "cbse11_combo": {
@@ -1772,12 +1810,12 @@
         category: "CBSE CLASS 11 COMBO",
         price: 169,
         pricePaise: 16900,
-        thumbnail: "./ABC.png",
+        thumbnail: "./cbse11_combo_thumb.jpg",
         lessons: [
-          { title: "Agri Chapter 1: Agronomy Fundamentals", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_1" },
-          { title: "Bio Unit 1: Diversity of Living Organisms", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_4" },
-          { title: "Agri Chapter 2: Soil Science Basics", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_2" },
-          { title: "Bio Unit 2: Plant Physiology", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_6" }
+          { title: "Agri Chapter 1: Agronomy Fundamentals", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_1", notesUrl: "./notes/cbse11_agri_ch1.pdf" },
+          { title: "Bio Unit 1: Diversity of Living Organisms", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_4", notesUrl: "./notes/cbse11_bio_ch1.pdf" },
+          { title: "Agri Chapter 2: Soil Science Basics", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_2", notesUrl: "./notes/cbse11_agri_ch2.pdf" },
+          { title: "Bio Unit 2: Plant Physiology", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_6", notesUrl: "./notes/cbse11_bio_ch3.pdf" }
         ]
       },
       "cbse12_agri": {
@@ -1785,11 +1823,11 @@
         category: "CBSE CLASS 12",
         price: 99,
         pricePaise: 9900,
-        thumbnail: "./CBSE12agri_thumbnail.png",
+        thumbnail: "./cbse12_thumb.jpg",
         lessons: [
-          { title: "Chapter 1: Advanced Crop Production Techniques", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_7" },
-          { title: "Chapter 2: Horticulture & Nursery Management", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_8" },
-          { title: "Chapter 3: Post Harvest Processing & Packaging", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_9" }
+          { title: "Chapter 1: Advanced Crop Production Techniques", videoUrl: "https://player.mediadelivery.net/embed/803768/8b8034aa-3598-4ffa-9304-441d6d582e5f?autoplay=true&loop=false&muted=false&preload=true&responsive=true", notesUrl: "./notes/cbse12_agri_ch1.pdf" },
+          { title: "Chapter 2: Horticulture & Nursery Management", videoUrl: "https://player.mediadelivery.net/embed/803768/c9a14769-5987-4c9b-8b09-cbc7368c3f47?autoplay=true&loop=false&muted=false&preload=true&responsive=true", notesUrl: "./notes/cbse12_agri_ch2.pdf" },
+          { title: "Chapter 3: Post Harvest Processing & Packaging", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_9", notesUrl: "./notes/cbse12_agri_ch3.pdf" }
         ]
       },
       "cbse12_bio": {
@@ -1797,11 +1835,11 @@
         category: "CBSE CLASS 12",
         price: 99,
         pricePaise: 9900,
-        thumbnail: "./CB12.png",
+        thumbnail: "./cbse12_bio_thumb.jpg",
         lessons: [
-          { title: "Unit 1: Principles of Inheritance and Variation", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_10" },
-          { title: "Unit 2: Molecular Basis of Inheritance", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_11" },
-          { title: "Unit 3: Biotechnology and Its Applications", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_12" }
+          { title: "Unit 1: Principles of Inheritance and Variation", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_10", notesUrl: "./notes/cbse12_bio_ch1.pdf" },
+          { title: "Unit 2: Molecular Basis of Inheritance", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_11", notesUrl: "./notes/cbse12_bio_ch2.pdf" },
+          { title: "Unit 3: Biotechnology and Its Applications", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_12", notesUrl: "./notes/cbse12_bio_ch3.pdf" }
         ]
       },
       "cbse12_combo": {
@@ -1809,12 +1847,12 @@
         category: "CBSE CLASS 12 COMBO",
         price: 169,
         pricePaise: 16900,
-        thumbnail: "./ABC.png",
+        thumbnail: "./cbse12_combo_thumb.jpg",
         lessons: [
-          { title: "Agri Chapter 1: Horticulture Principles", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_8" },
-          { title: "Bio Unit 1: Molecular Genetics", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_11" },
-          { title: "Agri Chapter 2: Post Harvest Tech", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_9" },
-          { title: "Bio Unit 2: Biotechnology", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_12" }
+          { title: "Agri Chapter 1: Horticulture Principles", videoUrl: "https://player.mediadelivery.net/embed/803768/c9a14769-5987-4c9b-8b09-cbc7368c3f47?autoplay=true&loop=false&muted=false&preload=true&responsive=true", notesUrl: "./notes/cbse12_agri_ch2.pdf" },
+          { title: "Bio Unit 1: Molecular Genetics", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_11", notesUrl: "./notes/cbse12_bio_ch2.pdf" },
+          { title: "Agri Chapter 2: Post Harvest Tech", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_9", notesUrl: "./notes/cbse12_agri_ch3.pdf" },
+          { title: "Bio Unit 2: Biotechnology", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_12", notesUrl: "./notes/cbse12_bio_ch3.pdf" }
         ]
       },
       "rbse11_agri": {
@@ -1822,21 +1860,21 @@
         category: "RBSE CLASS 11",
         price: 99,
         pricePaise: 9900,
-        thumbnail: "./ARB11.png",
+        thumbnail: "./rbse11_agri_thumb.jpg",
         lessons: [
-          { title: "अध्याय 1: शस्य विज्ञान के सिद्धांत", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_13" },
-          { title: "अध्याय 2: मृदा विज्ञान एवं पोषक तत्व", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_14" }
+          { title: "अध्याय 1: शस्य विज्ञान के सिद्धांत", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_13", notesUrl: "./notes/rbse11_agri_ch1.pdf" },
+          { title: "अध्याय 2: मृदा विज्ञान एवं पोषक तत्व", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_14", notesUrl: "./notes/rbse11_agri_ch2.pdf" }
         ]
       },
       "rbse11_bio": {
-        title: "RBSE 11 Ag. BIOLOGY (कृषि जीव विज्ञान)",
+        title: "RBSE 11 BIOLOGY (जीव विज्ञान)",
         category: "RBSE CLASS 11",
         price: 99,
         pricePaise: 9900,
-        thumbnail: "./RB11.png",
+        thumbnail: "./rbse11_bio_thumb.jpg",
         lessons: [
-          { title: "अध्याय 1: जीव जगत का वर्गीकरण", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_15" },
-          { title: "अध्याय 2: कोशिका संरचना एवं कार्य", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_16" }
+          { title: "अध्याय 1: जीव जगत का वर्गीकरण", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_15", notesUrl: "./notes/rbse11_bio_ch1.pdf" },
+          { title: "अध्याय 2: कोशिका संरचना एवं कार्य", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_16", notesUrl: "./notes/rbse11_bio_ch2.pdf" }
         ]
       },
       "rbse11_combo": {
@@ -1844,10 +1882,10 @@
         category: "RBSE CLASS 11 COMBO",
         price: 169,
         pricePaise: 16900,
-        thumbnail: "./ABC.png",
+        thumbnail: "./rbse11_combo_thumb.jpg",
         lessons: [
-          { title: "कृषि विज्ञान: शस्य विज्ञान सिद्धांत", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_13" },
-          { title: "जीव विज्ञान: कोशिका संरचना", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_16" }
+          { title: "कृषि विज्ञान: शस्य विज्ञान सिद्धांत", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_13", notesUrl: "./notes/rbse11_agri_ch1.pdf" },
+          { title: "जीव विज्ञान: कोशिका संरचना", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_16", notesUrl: "./notes/rbse11_bio_ch2.pdf" }
         ]
       },
       "rbse12_agri": {
@@ -1855,22 +1893,22 @@
         category: "RBSE CLASS 12",
         price: 99,
         pricePaise: 9900,
-        thumbnail: "./ARB12.png",
+        thumbnail: "./rbse12_agri_thumb.jpg",
         lessons: [
-          { title: "खंड 1: शस्य विज्ञान (Agronomy)", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_17" },
-          { title: "खंड 2: उद्यान विज्ञान (Horticulture)", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_18" },
-          { title: "खंड 3: पशुपालन एवं दुग्ध विज्ञान", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_19" }
+          { title: "खंड 1: शस्य विज्ञान (Agronomy)", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_17", notesUrl: "./notes/rbse12_agri_ch1.pdf" },
+          { title: "खंड 2: उद्यान विज्ञान (Horticulture)", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_18", notesUrl: "./notes/rbse12_agri_ch2.pdf" },
+          { title: "खंड 3: पशुपालन एवं दुग्ध विज्ञान", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_19", notesUrl: "./notes/rbse12_agri_ch3.pdf" }
         ]
       },
       "rbse12_bio": {
-        title: "RBSE 12 Ag. BIOLOGY (कृषि जीव विज्ञान)",
+        title: "RBSE 12 BIOLOGY (जीव विज्ञान)",
         category: "RBSE CLASS 12",
         price: 99,
         pricePaise: 9900,
-        thumbnail: "./RB12.png",
+        thumbnail: "./rbse12_bio_thumb.jpg",
         lessons: [
-          { title: "अध्याय 1: पादप जनन एवं अनुवांशिकी", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_20" },
-          { title: "अध्याय 2: जैव प्रौद्योगिकी एवं उपयोग", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_21" }
+          { title: "अध्याय 1: पादप जनन एवं अनुवांशिकी", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_20", notesUrl: "./notes/rbse12_bio_ch1.pdf" },
+          { title: "अध्याय 2: जैव प्रौद्योगिकी एवं उपयोग", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_21", notesUrl: "./notes/rbse12_bio_ch2.pdf" }
         ]
       },
       "rbse12_combo": {
@@ -1878,10 +1916,10 @@
         category: "RBSE CLASS 12 COMBO",
         price: 169,
         pricePaise: 16900,
-        thumbnail: "./ABC.png",
+        thumbnail: "./rbse12_combo_thumb.jpg",
         lessons: [
-          { title: "कृषि विज्ञान: शस्य व उद्यान विज्ञान", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_17" },
-          { title: "जीव विज्ञान: अनुवांशिकी एवं जैव प्रौद्योगिकी", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_20" }
+          { title: "कृषि विज्ञान: शस्य व उद्यान विज्ञान", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_17", notesUrl: "./notes/rbse12_agri_ch1.pdf" },
+          { title: "जीव विज्ञान: अनुवांशिकी एवं जैव प्रौद्योगिकी", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_20", notesUrl: "./notes/rbse12_bio_ch1.pdf" }
         ]
       },
       "agri_supervisor": {
@@ -1889,10 +1927,11 @@
         category: "GOVT SELECTION",
         price: 499,
         pricePaise: 49900,
+        thumbnail: "./agri_supervisor_thumb.jpg",
         lessons: [
-          { title: "Lecture 1: शस्य विज्ञान एवं बीज तकनीक (Agronomy)", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_22" },
-          { title: "Lecture 2: उद्यानिकी एवं फल परिरक्षण", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_23" },
-          { title: "Lecture 3: राजस्थान भूगोल एवं कला संस्कृति GK", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_24" }
+          { title: "Lecture 1: शस्य विज्ञान एवं बीज तकनीक (Agronomy)", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_22", notesUrl: "./notes/supervisor_ch1.pdf" },
+          { title: "Lecture 2: उद्यानिकी एवं फल परिरक्षण", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_23", notesUrl: "./notes/supervisor_ch2.pdf" },
+          { title: "Lecture 3: राजस्थान भूगोल एवं कला संस्कृति GK", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_24", notesUrl: "./notes/supervisor_ch3.pdf" }
         ]
       },
       "fso_officer": {
@@ -1900,9 +1939,10 @@
         category: "OFFICER EXAM",
         price: 899,
         pricePaise: 89900,
+        thumbnail: "./fso_thumb.jpg",
         lessons: [
-          { title: "Lecture 1: Food Chemistry, Additives & Nutrition", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_25" },
-          { title: "Lecture 2: Food Microbiology & Quality Standards", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_26" }
+          { title: "Lecture 1: Food Chemistry, Additives & Nutrition", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_25", notesUrl: "./notes/fso_ch1.pdf" },
+          { title: "Lecture 2: Food Microbiology & Quality Standards", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_26", notesUrl: "./notes/fso_ch2.pdf" }
         ]
       },
       "ao_aao_master": {
@@ -1910,9 +1950,10 @@
         category: "GAZETTED OFFICER",
         price: 999,
         pricePaise: 99900,
+        thumbnail: "./ao_aao_thumb.jpg",
         lessons: [
-          { title: "Module 1: Advanced Plant Breeding & Seed Science", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_27" },
-          { title: "Module 2: Plant Pathology & Entomology Integrated Management", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_28" }
+          { title: "Module 1: Advanced Plant Breeding & Seed Science", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_27", notesUrl: "./notes/ao_ch1.pdf" },
+          { title: "Module 2: Plant Pathology & Entomology Integrated Management", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_28", notesUrl: "./notes/ao_ch2.pdf" }
         ]
       }
     };
@@ -2083,16 +2124,40 @@
         course.lessons.forEach(function(lesson, index) {
           var item = document.createElement("div");
           item.className = "chapter-item-btn";
-          item.style.cssText = "padding:14px; border:1.5px solid #c8e6c9; background:#f1f8e9; border-radius:10px; display:flex; justify-content:space-between; align-items:center; cursor:pointer; font-weight:700; transition:all 0.15s ease;";
-          item.innerHTML = "<span><b>" + (index+1) + ".</b> " + lesson.title + "</span> <span style='color:#2e7d32; font-size:0.9rem;'>▶ Play Now</span>";
-          item.onclick = function() {
-            // Highlight selected item
+          item.style.cssText = "padding:12px 14px; border:1.5px solid #c8e6c9; background:#f1f8e9; border-radius:10px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; font-weight:700; transition:all 0.15s ease;";
+          
+          var notesBtnHtml = "";
+          if (lesson.notesUrl) {
+            notesBtnHtml = '<button class="view-notes-btn" style="background:#ffffff; color:#1b5e20; border:1.5px solid #2e7d32; padding:6px 12px; border-radius:6px; font-size:0.82rem; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:4px; box-shadow:0 2px 6px rgba(0,0,0,0.06); transition:background 0.15s;">📄 Notes</button>';
+          }
+
+          item.innerHTML = '<div style="flex:1; min-width:200px; cursor:pointer;" class="chapter-click-title"><span><b>' + (index+1) + '.</b> ' + lesson.title + '</span></div>' +
+                           '<div style="display:flex; align-items:center; gap:8px;">' +
+                             notesBtnHtml +
+                             '<button class="play-lecture-btn" style="background:#2e7d32; color:#ffffff; border:none; padding:6px 14px; border-radius:6px; font-size:0.85rem; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:4px;">▶ Play</button>' +
+                           '</div>';
+
+          // Click on title or Play button to play lecture
+          var playAction = function() {
             var allItems = listDiv.querySelectorAll(".chapter-item-btn");
             allItems.forEach(function(el) { el.style.background = "#f1f8e9"; el.style.borderColor = "#c8e6c9"; });
             item.style.background = "#dcedc8";
             item.style.borderColor = "#2e7d32";
             loadLecture(lesson.title, lesson.videoUrl);
           };
+
+          item.querySelector(".chapter-click-title").onclick = playAction;
+          item.querySelector(".play-lecture-btn").onclick = playAction;
+
+          // Click on Notes button opens secure view-only reader
+          var notesBtn = item.querySelector(".view-notes-btn");
+          if (notesBtn && lesson.notesUrl) {
+            notesBtn.onclick = function(e) {
+              e.stopPropagation();
+              openSecurePdf(lesson.title, lesson.notesUrl);
+            };
+          }
+
           listDiv.appendChild(item);
         });
 
@@ -2118,6 +2183,101 @@
       if (iframeBox) iframeBox.style.display = "block";
       document.getElementById("mainEmbedFrame").src = url;
     }
+
+    // ================= SECURE VIEW-ONLY PDF.JS READER SYSTEM =================
+    var currentPdfDoc = null;
+    var currentPdfPageNum = 1;
+    var totalPdfPages = 0;
+    var isPdfPageRendering = false;
+    var pdfPageNumPending = null;
+
+    if (window.pdfjsLib) {
+      window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    }
+
+    window.openSecurePdf = function(title, pdfUrl) {
+      document.getElementById("pdfTitleDisplay").innerText = "📄 " + title;
+      var statusBox = document.getElementById("pdfLoadingStatus");
+      if (statusBox) statusBox.style.display = "block";
+      document.getElementById("pdfModal").style.display = "block";
+      currentPdfPageNum = 1;
+
+      if (!window.pdfjsLib) {
+        alert("PDF viewer library is initializing. Please try again in 2 seconds.");
+        return;
+      }
+
+      window.pdfjsLib.getDocument(pdfUrl).promise.then(function(pdfDoc_) {
+        currentPdfDoc = pdfDoc_;
+        totalPdfPages = pdfDoc_.numPages;
+        document.getElementById("pdfTotalPages").innerText = totalPdfPages;
+        if (statusBox) statusBox.style.display = "none";
+        renderPdfPage(currentPdfPageNum);
+      }).catch(function(err) {
+        if (statusBox) statusBox.style.display = "none";
+        alert("⚠️ Note: Is chapter ke PDF notes file abhi upload nahi hui hai.\n\nUpload file: " + pdfUrl);
+      });
+    };
+
+    function renderPdfPage(num) {
+      if (!currentPdfDoc) return;
+      isPdfPageRendering = true;
+      currentPdfDoc.getPage(num).then(function(page) {
+        var canvas = document.getElementById('pdfRenderCanvas');
+        var ctx = canvas.getContext('2d');
+        
+        // Auto scale to fit container width cleanly
+        var containerWidth = document.getElementById('pdfCanvasContainer').clientWidth - 40;
+        var unscaledViewport = page.getViewport({ scale: 1.0 });
+        var scale = (containerWidth > 0 && containerWidth < 800) ? (containerWidth / unscaledViewport.width) : 1.35;
+        if (scale < 0.8) scale = 0.8;
+        if (scale > 1.8) scale = 1.8;
+
+        var viewport = page.getViewport({ scale: scale });
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+
+        var renderContext = {
+          canvasContext: ctx,
+          viewport: viewport
+        };
+        var renderTask = page.render(renderContext);
+
+        renderTask.promise.then(function() {
+          isPdfPageRendering = false;
+          if (pdfPageNumPending !== null) {
+            renderPdfPage(pdfPageNumPending);
+            pdfPageNumPending = null;
+          }
+        });
+      });
+      document.getElementById('pdfCurrentPage').innerText = num;
+    }
+
+    function queuePdfRenderPage(num) {
+      if (isPdfPageRendering) {
+        pdfPageNumPending = num;
+      } else {
+        renderPdfPage(num);
+      }
+    }
+
+    window.prevPdfPage = function() {
+      if (!currentPdfDoc || currentPdfPageNum <= 1) return;
+      currentPdfPageNum--;
+      queuePdfRenderPage(currentPdfPageNum);
+    };
+
+    window.nextPdfPage = function() {
+      if (!currentPdfDoc || currentPdfPageNum >= totalPdfPages) return;
+      currentPdfPageNum++;
+      queuePdfRenderPage(currentPdfPageNum);
+    };
+
+    window.closePdfModal = function() {
+      document.getElementById("pdfModal").style.display = "none";
+      currentPdfDoc = null;
+    };
   </script>
 
   <!-- Razorpay Checkout Script -->
