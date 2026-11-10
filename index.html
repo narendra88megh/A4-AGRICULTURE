@@ -1825,9 +1825,22 @@
         pricePaise: 9900,
         thumbnail: "./CBSE12agri_thumbnail.png",
         lessons: [
-          { title: "Chapter 1: Advanced Crop Production Techniques", videoUrl: "https://player.mediadelivery.net/embed/803768/8b8034aa-3598-4ffa-9304-441d6d582e5f?autoplay=true&loop=false&muted=false&preload=true&responsive=true", notesUrl: "./chap4.pdf" },
-          { title: "Chapter 2: Horticulture & Nursery Management", videoUrl: "https://player.mediadelivery.net/embed/803768/c9a14769-5987-4c9b-8b09-cbc7368c3f47?autoplay=true&loop=false&muted=false&preload=true&responsive=true", notesUrl: "./honeybee.pdf" },
-          { title: "Chapter 3: Post Harvest Processing & Packaging", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_9", notesUrl: "./notes/cbse12_agri_ch3.pdf" }
+          { 
+            title: "Chapter 1: Advanced Crop Production Techniques (Free Demo)", 
+            videoUrl: "https://www.youtube.com/embed/wFKMI-NR-aI", 
+            notesUrl: "./chap4.pdf",
+            isFree: true 
+          },
+          { 
+            title: "Chapter 2: Horticulture & Nursery Management", 
+            videoUrl: "https://player.mediadelivery.net/embed/803768/c9a14769-5987-4c9b-8b09-cbc7368c3f47?autoplay=true&loop=false&muted=false&preload=true&responsive=true", 
+            notesUrl: "./honeybee.pdf" 
+          },
+          { 
+            title: "Chapter 3: Post Harvest Processing & Packaging", 
+            videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_9", 
+            notesUrl: "./notes/cbse12_agri_ch3.pdf" 
+          }
         ]
       },
       "cbse12_bio": {
@@ -1847,7 +1860,7 @@
         category: "CBSE CLASS 12 COMBO",
         price: 169,
         pricePaise: 16900,
-        thumbnail: "./ABC.png",
+        thumbnail: "./cbse12_combo_thumb.jpg",
         lessons: [
           { title: "Agri Chapter 1: Horticulture Principles", videoUrl: "https://player.mediadelivery.net/embed/803768/c9a14769-5987-4c9b-8b09-cbc7368c3f47?autoplay=true&loop=false&muted=false&preload=true&responsive=true", notesUrl: "./notes/cbse12_agri_ch2.pdf" },
           { title: "Bio Unit 1: Molecular Genetics", videoUrl: "https://iframe.mediadelivery.net/embed/LIBRARY_ID/VIDEO_11", notesUrl: "./notes/cbse12_bio_ch2.pdf" },
@@ -2014,7 +2027,7 @@
               <div>
                 <span style="font-size:0.75rem; background:#2e7d32; color:#fff; padding:2px 8px; border-radius:4px; font-weight:800;">${c.category}</span>
                 <h4 style="color:var(--green-dark); margin-top:4px; font-size:1.05rem; font-weight:800;">${c.title}</h4>
-                <span style="color:#2e7d32; font-size:0.85rem; font-weight:700;">✓ Lifetime Access Active</span>
+                <span style="color:#2e7d32; font-size:0.85rem; font-weight:700;">✓ 1 Year Access Active</span>
               </div>
               <button onclick="closeMyCoursesModal(); openCoursePortal('${courseId}');" class="btn-gold" style="background:#2e7d32; color:#fff; border:none; padding:10px 20px; font-size:0.9rem; cursor:pointer;">
                 ▶ Open Course
@@ -2162,14 +2175,86 @@
         });
 
       } else {
+        // Course not purchased yet:
+        // Check if course has any free demo lectures
+        var hasDemo = course.lessons.some(function(l) { return l.isFree; });
         lockBox.style.display = "block";
-        videoBox.style.display = "none";
-        statusTag.innerHTML = "<span style='color:#c62828;'>🔒 LOCKED</span>";
+        
+        if (hasDemo) {
+          videoBox.style.display = "block";
+          statusTag.innerHTML = "<span style='color:#f57f17; font-weight:800;'>● FREE DEMO AVAILABLE</span>";
+          
+          var thumbBanner = document.getElementById("courseThumbnailBanner");
+          var iframeBox = document.getElementById("activeIframeBox");
+          var bannerImg = document.getElementById("courseBannerImg");
+          var bannerFallback = document.getElementById("bannerFallbackCard");
+          var bannerTitle = document.getElementById("bannerFallbackTitle");
+          var activeLessonName = document.getElementById("activeLessonName");
+
+          if (activeLessonName) activeLessonName.innerText = "🎬 " + course.title;
+          if (thumbBanner && iframeBox) {
+            thumbBanner.style.display = "flex";
+            iframeBox.style.display = "none";
+            var iframe = document.getElementById("mainEmbedFrame");
+            if (iframe) iframe.src = "";
+
+            if (course.thumbnail) {
+              bannerImg.src = course.thumbnail;
+              bannerImg.style.display = "block";
+              if (bannerFallback) bannerFallback.style.display = "none";
+            } else {
+              bannerImg.style.display = "none";
+              if (bannerFallback) {
+                bannerFallback.style.display = "block";
+                if (bannerTitle) bannerTitle.innerText = course.title;
+              }
+            }
+          }
+        } else {
+          videoBox.style.display = "none";
+          statusTag.innerHTML = "<span style='color:#c62828;'>🔒 LOCKED</span>";
+        }
 
         course.lessons.forEach(function(lesson, index) {
           var item = document.createElement("div");
-          item.style.cssText = "padding:14px; border:1.5px solid #eee; background:#fafafa; border-radius:10px; display:flex; justify-content:space-between; align-items:center; color:#888;";
-          item.innerHTML = "<span><b>" + (index+1) + ".</b> " + lesson.title + "</span> <span style='font-size:0.85rem; font-weight:700;'>🔒 Locked</span>";
+          item.className = "chapter-item-btn";
+
+          if (lesson.isFree) {
+            item.style.cssText = "padding:12px 14px; border:1.5px solid #81c784; background:#e8f5e9; border-radius:10px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; font-weight:700; cursor:pointer;";
+            
+            var notesBtnHtml = "";
+            if (lesson.notesUrl) {
+              notesBtnHtml = '<button class="view-notes-btn" style="background:#ffffff; color:#1b5e20; border:1.5px solid #2e7d32; padding:6px 12px; border-radius:6px; font-size:0.82rem; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:4px; box-shadow:0 2px 6px rgba(0,0,0,0.06);">📄 Notes</button>';
+            }
+
+            item.innerHTML = '<div style="flex:1; min-width:200px;" class="chapter-click-title"><span><b>' + (index+1) + '.</b> ' + lesson.title + '</span> <span style="background:#2e7d32; color:#fff; font-size:0.72rem; padding:2px 7px; border-radius:4px; margin-left:6px; font-weight:800;">FREE DEMO</span></div>' +
+                             '<div style="display:flex; align-items:center; gap:8px;">' +
+                               notesBtnHtml +
+                               '<button class="play-lecture-btn" style="background:#2e7d32; color:#ffffff; border:none; padding:6px 14px; border-radius:6px; font-size:0.85rem; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; gap:4px;">▶ Watch Demo</button>' +
+                             '</div>';
+
+            var playAction = function() {
+              var allItems = listDiv.querySelectorAll(".chapter-item-btn");
+              allItems.forEach(function(el) { el.style.background = "#e8f5e9"; el.style.borderColor = "#81c784"; });
+              item.style.background = "#c8e6c9";
+              item.style.borderColor = "#2e7d32";
+              loadLecture(lesson.title + " (Free Demo)", lesson.videoUrl);
+            };
+
+            item.querySelector(".chapter-click-title").onclick = playAction;
+            item.querySelector(".play-lecture-btn").onclick = playAction;
+
+            var notesBtn = item.querySelector(".view-notes-btn");
+            if (notesBtn && lesson.notesUrl) {
+              notesBtn.onclick = function(e) {
+                e.stopPropagation();
+                openSecurePdf(lesson.title, lesson.notesUrl);
+              };
+            }
+          } else {
+            item.style.cssText = "padding:14px; border:1.5px solid #eee; background:#fafafa; border-radius:10px; display:flex; justify-content:space-between; align-items:center; color:#888;";
+            item.innerHTML = "<span><b>" + (index+1) + ".</b> " + lesson.title + "</span> <span style='font-size:0.85rem; font-weight:700;'>🔒 Locked</span>";
+          }
           listDiv.appendChild(item);
         });
       }
